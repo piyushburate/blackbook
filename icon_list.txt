@@ -1,0 +1,25 @@
+home
+history
+news or globe or network
+subscription or shop or cart
+profile
+profile_settings
+notification_settings
+app_theme
+share
+lock
+terms or notepad
+log_out
+search
+edit pencil
+arrow_forward and arrow_backword
+filter
+timer
+question_mark
+marks_obtained
+grid
+check
+password_show_hide
+email
+birthday
+gender(male,female,other)
