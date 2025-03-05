@@ -17,7 +17,7 @@ class UserModel extends User {
   }
 
   factory UserModel.fromModel(Map<String, dynamic> map) {
-    final exceptions = ['selected_exam', 'mobile'];
+    final exceptions = ['selected_exam', 'mobile', 'avatar'];
     for (var key in map.keys) {
       if (exceptions.contains(key)) {
         continue;

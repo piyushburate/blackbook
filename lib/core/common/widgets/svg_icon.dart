@@ -20,12 +20,10 @@ class SvgIcon extends StatelessWidget {
       SvgAssetLoader(asset),
       width: size,
       height: size,
-      colorFilter: (color != null)
-          ? ColorFilter.mode(
-              color!,
-              BlendMode.srcIn,
-            )
-          : null,
+      colorFilter: ColorFilter.mode(
+        color ?? Theme.of(context).colorScheme.onSurface,
+        BlendMode.srcIn,
+      ),
     );
   }
 }

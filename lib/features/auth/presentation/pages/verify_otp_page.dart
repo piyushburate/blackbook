@@ -1,6 +1,3 @@
-import 'package:blackbook/core/theme/app_pallete.dart';
-import 'package:blackbook/core/common/widgets/app_button.dart';
-import 'package:blackbook/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,6 +5,10 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pinput/pinput.dart';
+
+import '../bloc/auth_bloc.dart';
+import '../../../../core/theme/app_theme.dart';
+import '../../../../core/common/widgets/app_button.dart';
 
 class VerifyOtpPage extends StatefulWidget {
   const VerifyOtpPage({super.key});
@@ -75,9 +76,14 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                       keyboardType: TextInputType.number,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       defaultPinTheme: _pinTheme(),
-                      focusedPinTheme: _pinTheme(AppPallete.borderDarkColor),
-                      followingPinTheme: _pinTheme(AppPallete.borderLightColor),
-                      errorPinTheme: _pinTheme(AppPallete.errorColor),
+                      focusedPinTheme: _pinTheme(Theme.of(context)
+                          .extension<AppColors>()!
+                          .borderDarkColor),
+                      followingPinTheme: _pinTheme(Theme.of(context)
+                          .extension<AppColors>()!
+                          .borderLightColor),
+                      errorPinTheme:
+                          _pinTheme(Theme.of(context).colorScheme.error),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter OTP';
@@ -99,7 +105,7 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                             text: "Resend",
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
-                              color: AppPallete.primaryColor,
+                              color: Theme.of(context).colorScheme.primary,
                             ),
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
@@ -129,10 +135,13 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
     );
   }
 
-  PinTheme _pinTheme([Color color = AppPallete.borderDarkColor]) => PinTheme(
+  PinTheme _pinTheme([Color? color]) => PinTheme(
         decoration: BoxDecoration(
-          color: AppPallete.backgroundColor,
-          border: Border.all(width: 1.5, color: color),
+          color: Theme.of(context).scaffoldBackgroundColor,
+          border: Border.all(
+              width: 1.5,
+              color: color ??
+                  Theme.of(context).extension<AppColors>()!.borderDarkColor),
           borderRadius: BorderRadius.circular(12),
         ),
         padding: EdgeInsets.fromLTRB(0, 18, 0, 18),

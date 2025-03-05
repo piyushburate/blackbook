@@ -1,5 +1,7 @@
 import 'package:blackbook/core/common/entities/auth_user.dart';
+import 'package:blackbook/core/common/entities/avatar.dart';
 import 'package:blackbook/core/common/entities/exam.dart';
+import 'package:blackbook/core/common/models/avatar_model.dart';
 import 'package:blackbook/core/common/models/exam_model.dart';
 import 'package:blackbook/core/common/models/user_model.dart';
 
@@ -20,6 +22,8 @@ class AuthUserModel extends UserModel implements AuthUser {
   final Exam? selectedExam;
   @override
   final String? mobile;
+  @override
+  final Avatar? avatar;
 
   @override
   String get fullName => '$firstName $lastName';
@@ -36,6 +40,7 @@ class AuthUserModel extends UserModel implements AuthUser {
     required this.examsPreparing,
     this.selectedExam,
     this.mobile,
+    this.avatar,
   });
 
   factory AuthUserModel.fromJson(Map<String, dynamic> map) {
@@ -56,6 +61,9 @@ class AuthUserModel extends UserModel implements AuthUser {
           ? ExamModel.fromJson(map['selected_exam'])
           : null,
       mobile: map['mobile'],
+      avatar: (map['avatar'] == null)
+          ? null
+          : AvatarModel.fromName(map['avatar'].toString()),
     );
   }
 
@@ -72,6 +80,7 @@ class AuthUserModel extends UserModel implements AuthUser {
     List<String>? examsPreparing,
     Exam? selectedExam,
     String? mobile,
+    Avatar? avatar,
   }) {
     return AuthUserModel(
       id: id ?? this.id,
@@ -85,6 +94,7 @@ class AuthUserModel extends UserModel implements AuthUser {
       examsPreparing: examsPreparing ?? this.examsPreparing,
       selectedExam: selectedExam ?? this.selectedExam,
       mobile: mobile ?? this.mobile,
+      avatar: avatar ?? this.avatar,
     );
   }
 }

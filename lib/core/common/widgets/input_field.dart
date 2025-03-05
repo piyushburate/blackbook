@@ -36,6 +36,7 @@ class InputField extends StatelessWidget {
         contentPadding: EdgeInsets.all(22),
         hintText: hintText,
         labelText: labelText,
+        errorMaxLines: 10,
         prefixIcon: (prefixIcon == null)
             ? null
             : Padding(

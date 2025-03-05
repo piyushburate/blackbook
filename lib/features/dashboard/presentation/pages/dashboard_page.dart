@@ -3,7 +3,6 @@ import 'package:blackbook/core/common/entities/auth_user.dart';
 import 'package:blackbook/core/common/widgets/app_loader.dart';
 import 'package:blackbook/core/common/widgets/svg_icon.dart';
 import 'package:blackbook/core/constants/app_icons.dart';
-import 'package:blackbook/core/theme/app_pallete.dart';
 import 'package:blackbook/features/dashboard/presentation/sections/exam_section.dart';
 import 'package:blackbook/features/dashboard/presentation/sections/history_section.dart';
 import 'package:blackbook/features/dashboard/presentation/sections/home_section.dart';
@@ -28,7 +27,6 @@ class _DashboardPageState extends State<DashboardPage> {
     AppIcons.home,
     AppIcons.book,
     AppIcons.notes,
-    AppIcons.mail,
     AppIcons.profileCircled,
   ];
 
@@ -66,11 +64,10 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget build(BuildContext context) {
     return BlocListener<AppUserCubit, AppUserState>(
       listener: (context, state) {
-        if (state is AppUserLoggedOut) {
-          context.push('/auth/login');
-        }
         if (state is AppUserAuthorized) {
           setAuthUser(state);
+        } else {
+          context.go('/auth/login');
         }
       },
       child: PopScope(
@@ -95,7 +92,7 @@ class _DashboardPageState extends State<DashboardPage> {
                           return ExamSection(authUser: authUser!);
                         case 2:
                           return HistorySection();
-                        case 4:
+                        case 3:
                           return ProfileSection(authUser: authUser!);
                         default:
                           return Center(child: SvgIcon(pageList[index]));
@@ -114,7 +111,7 @@ class _DashboardPageState extends State<DashboardPage> {
       margin: EdgeInsets.symmetric(horizontal: 10),
       padding: EdgeInsets.fromLTRB(4, 4, 4, 12),
       decoration: BoxDecoration(
-        color: AppPallete.backgroundColor,
+        color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.vertical(top: Radius.circular(35)),
       ),
       child: Material(
@@ -133,8 +130,8 @@ class _DashboardPageState extends State<DashboardPage> {
                   child: SvgIcon(
                     pageList[index],
                     color: (index == pageIndex)
-                        ? AppPallete.primaryColor
-                        : Colors.grey,
+                        ? Theme.of(context).colorScheme.primary
+                        : Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               );

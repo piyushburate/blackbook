@@ -65,7 +65,6 @@ class SearchInputFieldState extends State<SearchInputField> {
                 }),
                 icon: const Icon(
                   Icons.clear_rounded,
-                  color: Colors.black87,
                   size: 20,
                 ),
               ),

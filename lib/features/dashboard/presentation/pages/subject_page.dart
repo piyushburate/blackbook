@@ -1,22 +1,61 @@
-import 'package:blackbook/core/common/entities/qset.dart';
-import 'package:blackbook/core/common/entities/subject.dart';
-import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:get_it/get_it.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+
+import '../../../../core/common/entities/qset.dart';
+import '../../../../core/common/entities/subject.dart';
+import '../../../../core/common/pages/error_page.dart';
+import '../../../../core/common/widgets/app_loader.dart';
+import '../cubits/exam/exam_cubit.dart';
 
 class SubjectPage extends StatefulWidget {
-  final Subject subject;
-  const SubjectPage(this.subject, {super.key});
+  final String id;
+  const SubjectPage(this.id, {super.key});
 
   @override
   State<SubjectPage> createState() => _SubjectPageState();
 }
 
 class _SubjectPageState extends State<SubjectPage> {
-  Subject get subject => widget.subject;
+  Subject? subject;
+  bool loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      fetchSubject();
+    });
+  }
+
+  void fetchSubject() async {
+    if (!loading) {
+      setState(() => loading = true);
+    }
+    final subject =
+        await GetIt.instance<ExamCubit>().getSubjectFromId(widget.id);
+    if (subject != null) {
+      this.subject = subject;
+    }
+    setState(() {
+      loading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (loading) {
+      return AppLoader();
+    }
+    if (subject == null) {
+      return ErrorPage(
+        title: 'Error!',
+        subtitle: 'No Subject Found!',
+        onRetry: fetchSubject,
+      );
+    }
     return SafeArea(
       child: Scaffold(
         body: CustomScrollView(
@@ -34,7 +73,7 @@ class _SubjectPageState extends State<SubjectPage> {
                 Gap(20),
               ],
             ),
-            buildQsetList(subject.qsets),
+            buildQsetList(subject!.qsets),
           ],
         ),
       ),
@@ -48,24 +87,27 @@ class _SubjectPageState extends State<SubjectPage> {
         itemCount: qsets.length,
         separatorBuilder: (context, index) => Gap(12),
         itemBuilder: (context, index) {
-          return ListTile(
-            onTap: () => context.push('/qset/${qsets[index].id}'),
-            title: Text(
-              qsets[index].title,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
+          return Material(
+            type: MaterialType.transparency,
+            child: ListTile(
+              onTap: () => context.push('/qset/${qsets[index].id}'),
+              title: Text(
+                qsets[index].title,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
-            ),
-            subtitle: Text(
-              '${qsets[index].questions.length} Questions',
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w300,
+              subtitle: Text(
+                '${qsets[index].questions.length} Questions',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w300,
+                ),
               ),
+              trailing: Icon(Icons.arrow_forward_ios_rounded, size: 12),
             ),
-            trailing: Icon(Icons.arrow_forward_ios_rounded, size: 12),
-          );
+          ).animate(delay: (index * 100).ms).slideX().fade();
         },
       ),
     );
@@ -77,14 +119,14 @@ class _SubjectPageState extends State<SubjectPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          subject.name,
+          subject!.name,
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w500,
           ),
         ),
         Text(
-          '${subject.chaptersCount} Chapters, ${subject.questionsCount} Questions',
+          '${subject!.chaptersCount} Chapters, ${subject!.questionsCount} Questions',
           maxLines: 2,
           style: TextStyle(
             fontSize: 14,

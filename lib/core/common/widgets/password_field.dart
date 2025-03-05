@@ -39,6 +39,7 @@ class _PasswordFieldState extends State<PasswordField> {
       decoration: InputDecoration(
         hintText: widget.hintText,
         labelText: widget.labelText,
+        errorMaxLines: 10,
         prefixIcon: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: SvgIcon(AppIcons.lock, size: 20),

@@ -73,7 +73,7 @@ class ExamCubit extends Cubit<ExamState> {
     );
   }
 
-  Future<Subject?> getSubjetFromId(String id) async {
+  Future<Subject?> getSubjectFromId(String id) async {
     Subject? result;
     final response = await _getSubject(GetSubjectParams(id));
     response.fold(

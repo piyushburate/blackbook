@@ -13,6 +13,10 @@ part 'app_user_state.dart';
 class AppUserCubit extends Cubit<AppUserState> {
   AppUserCubit() : super(AppUserInitial());
 
+  void refreshState() {
+    GetIt.instance<AuthBloc>().add(AuthIsUserLoggedIn());
+  }
+
   void updateUser(final AuthSuccess? authState) {
     if (authState == null) {
       emit(AppUserLoggedOut());

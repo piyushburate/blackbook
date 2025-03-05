@@ -1,16 +1,18 @@
 import 'package:blackbook/core/common/cubits/app_user/app_user_cubit.dart';
-import 'package:blackbook/core/common/widgets/app_loader.dart';
+import 'package:blackbook/core/common/pages/error_page.dart';
 import 'package:blackbook/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:blackbook/features/auth/presentation/pages/complete_registration_page.dart';
 import 'package:blackbook/features/auth/presentation/pages/login_page.dart';
 import 'package:blackbook/features/auth/presentation/pages/signup_page.dart';
 import 'package:blackbook/features/auth/presentation/pages/verify_otp_page.dart';
-import 'package:blackbook/features/dashboard/presentation/cubits/exam/exam_cubit.dart';
 import 'package:blackbook/features/dashboard/presentation/pages/dashboard_page.dart';
 import 'package:blackbook/features/dashboard/presentation/pages/practice_page.dart';
 import 'package:blackbook/features/dashboard/presentation/pages/qset_page.dart';
 import 'package:blackbook/features/dashboard/presentation/pages/subject_page.dart';
-import 'package:flutter/material.dart';
+import 'package:blackbook/features/settings/presentation/pages/account_settings_page.dart';
+import 'package:blackbook/features/settings/presentation/pages/change_password_page.dart';
+import 'package:blackbook/features/settings/presentation/pages/edit_personal_details_page.dart';
+import 'package:blackbook/features/settings/presentation/pages/set_app_theme_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -42,6 +44,7 @@ class AppRouter {
       }
       return redirectUrl;
     },
+    errorBuilder: (context, state) => ErrorPage(),
     routes: [
       GoRoute(
         path: '/auth/:page',
@@ -65,73 +68,46 @@ class AppRouter {
       GoRoute(
         path: '/subject/:id',
         builder: (context, state) {
-          final id = state.pathParameters['id'] ?? '';
-          return FutureBuilder(
-            future: context.read<ExamCubit>().getSubjetFromId(id),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState != ConnectionState.done) {
-                return AppLoader();
-              }
-              if (snapshot.data != null) {
-                return SubjectPage(snapshot.data!);
-              }
-              return SizedBox();
-            },
-          );
+          return SubjectPage(state.pathParameters['id'] ?? '');
         },
       ),
       GoRoute(
         path: '/qset/:id',
         builder: (context, state) {
-          final id = state.pathParameters['id'] ?? '';
-          return FutureBuilder(
-            future: context.read<ExamCubit>().getQsetFromId(id),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState != ConnectionState.done) {
-                return AppLoader();
-              }
-              if (snapshot.data != null) {
-                return FutureBuilder(
-                    future: context
-                        .read<ExamCubit>()
-                        .getQsetAttemptedQuestions(snapshot.data!),
-                    builder: (context, snapshot2) {
-                      if (snapshot2.connectionState != ConnectionState.done) {
-                        return AppLoader();
-                      }
-                      if (snapshot2.data != null) {
-                        return QsetPage(
-                          qset: snapshot.data!,
-                          attemptedQuestions: snapshot2.data!,
-                        );
-                      }
-                      return SizedBox();
-                    });
-              }
-              return SizedBox();
-            },
-          );
+          return QsetPage(state.pathParameters['id'] ?? '');
         },
       ),
       GoRoute(
         path: '/qset/:id/practice',
         builder: (context, state) {
-          final id = state.pathParameters['id'] ?? '';
-          return FutureBuilder(
-            future: context.read<ExamCubit>().getQsetFromId(id),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState != ConnectionState.done) {
-                return AppLoader();
-              }
-              if (snapshot.data != null) {
-                return PracticePage(
-                  snapshot.data!,
-                  initialQuestionId: state.extra.toString(),
-                );
-              }
-              return SizedBox();
-            },
+          return PracticePage(
+            state.pathParameters['id'] ?? '',
+            initialQuestionId: state.extra.toString(),
           );
+        },
+      ),
+      GoRoute(
+        path: '/settings/app_theme',
+        builder: (context, state) {
+          return SetAppThemePage();
+        },
+      ),
+      GoRoute(
+        path: '/settings/account_settings',
+        builder: (context, state) {
+          return AccountSettingsPage();
+        },
+      ),
+      GoRoute(
+        path: '/settings/account_settings/edit_personal_details',
+        builder: (context, state) {
+          return EditPersonalDetailsPage();
+        },
+      ),
+      GoRoute(
+        path: '/settings/account_settings/change_password',
+        builder: (context, state) {
+          return ChangePasswordPage();
         },
       ),
     ],

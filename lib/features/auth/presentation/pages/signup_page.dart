@@ -1,15 +1,16 @@
 import 'package:blackbook/core/common/widgets/svg_icon.dart';
 import 'package:blackbook/core/constants/app_icons.dart';
-import 'package:blackbook/core/theme/app_pallete.dart';
 import 'package:blackbook/core/common/widgets/app_button.dart';
 import 'package:blackbook/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:blackbook/features/auth/presentation/widgets/password_field.dart';
+import 'package:blackbook/core/common/widgets/password_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:regexed_validator/regexed_validator.dart';
+
+import '../../../../core/theme/app_theme.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -103,6 +104,7 @@ class _SignupPageState extends State<SignupPage> {
                         keyboardType: TextInputType.emailAddress,
                         decoration: InputDecoration(
                           hintText: 'Email Address',
+                          errorMaxLines: null,
                           prefixIcon: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 16),
                             child: SvgIcon(AppIcons.mail, size: 20),
@@ -146,7 +148,9 @@ class _SignupPageState extends State<SignupPage> {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
-                    color: AppPallete.normalTextColor,
+                    color: Theme.of(context)
+                        .extension<AppColors>()
+                        ?.normalTextColor,
                   ),
                 ),
                 AppButton(

@@ -8,4 +8,6 @@ class AppImages {
   static const String facebookLogo = 'assets/images/facebook_logo.png';
   static const String profileAvatar = 'assets/images/profile_avatar.png';
   static const String homeBanner = 'assets/images/home_banner.png';
+  static const String waves = 'assets/images/waves.png';
+  static const String rocket = 'assets/images/rocket.png';
 }

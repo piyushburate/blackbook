@@ -1,11 +1,10 @@
 import 'package:blackbook/core/common/widgets/svg_icon.dart';
 import 'package:blackbook/core/constants/app_icons.dart';
 import 'package:blackbook/core/constants/app_images.dart';
-import 'package:blackbook/core/theme/app_pallete.dart';
 import 'package:blackbook/core/common/widgets/app_button.dart';
 import 'package:blackbook/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:blackbook/features/auth/presentation/widgets/google_signin_button.dart';
-import 'package:blackbook/features/auth/presentation/widgets/password_field.dart';
+import 'package:blackbook/core/common/widgets/password_field.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,6 +12,8 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:regexed_validator/regexed_validator.dart';
+
+import '../../../../core/theme/app_theme.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -44,12 +45,12 @@ class _LoginPageState extends State<LoginPage> {
     if (value == null || value.isEmpty) {
       return 'Password is required';
     }
-    if (value.length < 8) {
-      return 'Password must be at least 8 characters long';
-    }
-    if (!validator.password(value)) {
-      return 'Password at least contain one uppercase, lowercase, special character, & number';
-    }
+    // if (value.length < 8) {
+    //   return 'Password must be at least 8 characters long';
+    // }
+    // if (!validator.password(value)) {
+    //   return 'Password at least contain one uppercase, lowercase, special character, & number';
+    // }
     return null;
   }
 
@@ -91,7 +92,8 @@ class _LoginPageState extends State<LoginPage> {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 26,
-                    color: AppPallete.darkTextColor,
+                    color:
+                        Theme.of(context).extension<AppColors>()?.darkTextColor,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -146,7 +148,7 @@ class _LoginPageState extends State<LoginPage> {
                         text: 'Sign In',
                         trailing: Icon(Icons.arrow_forward_rounded),
                       ),
-                      const Padding(
+                      Padding(
                         padding: EdgeInsets.symmetric(horizontal: 24),
                         child: Text(
                           'By signing in, you agree to our Terms and Privacy Policy.',
@@ -154,7 +156,9 @@ class _LoginPageState extends State<LoginPage> {
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
-                            color: AppPallete.normalTextColor,
+                            color: Theme.of(context)
+                                .extension<AppColors>()
+                                ?.normalTextColor,
                           ),
                         ),
                       ),
@@ -188,7 +192,7 @@ class _LoginPageState extends State<LoginPage> {
                           text: "Sign Up",
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
-                            color: AppPallete.primaryColor,
+                            color: Theme.of(context).colorScheme.primary,
                           ),
                           recognizer: TapGestureRecognizer()
                             ..onTap = () => context.push('/auth/signup'),

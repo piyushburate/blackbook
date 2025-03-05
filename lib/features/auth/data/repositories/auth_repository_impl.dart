@@ -16,9 +16,8 @@ class AuthRepositoryImpl implements AuthRepository {
     return _getUser(() async {
       final user = await remoteDataSource.getCurrentUserData();
       if (user == null) {
-        throw ServerException('User not logged in!');
+        throw ServerException('Log in first!');
       }
-
       return user;
     });
   }
@@ -50,6 +49,10 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       final user = await function();
       return right(user);
+    } on sp.PostgrestException catch (e) {
+      return left(Failure(e.message));
+    } on sp.AuthException catch (e) {
+      return left(Failure(e.message));
     } on ServerException catch (e) {
       return left(Failure(e.message));
     } catch (e) {
@@ -62,6 +65,8 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       final message = await remoteDataSource.sendOtp(email);
       return right(message);
+    } on sp.PostgrestException catch (e) {
+      return left(Failure(e.message));
     } on sp.AuthException catch (e) {
       return left(Failure(e.message));
     } on ServerException catch (e) {

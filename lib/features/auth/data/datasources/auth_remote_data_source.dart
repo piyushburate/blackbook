@@ -45,22 +45,14 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     required String email,
     required String password,
   }) async {
-    try {
-      final data = await supabaseClient
-          .from('users')
-          .select('email')
-          .eq('email', email)
-          .limit(1)
-          .maybeSingle();
-      if (data == null) {
-        throw ServerException('Sign up first!');
-      }
-    } on PostgrestException catch (e) {
-      throw ServerException(e.message);
-    } on ServerException catch (e) {
-      throw ServerException(e.message);
-    } catch (e) {
-      throw ServerException(e.toString());
+    final data = await supabaseClient
+        .from('users')
+        .select('email')
+        .eq('email', email)
+        .limit(1)
+        .maybeSingle();
+    if (data == null) {
+      throw ServerException('Sign up first!');
     }
     return _getSession(() async {
       final response = await supabaseClient.auth.signInWithPassword(
@@ -68,7 +60,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         password: password,
       );
       final user = response.user;
-      if (user == null) {
+      final session = response.session;
+      if (user == null || session == null) {
         throw ServerException('Error signing user!');
       }
       return user;
@@ -101,8 +94,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           .from('users')
           .select(userQuery)
           .eq('id', user.id)
-          .single();
-
+          .maybeSingle();
+      if (userData == null) {
+        throw 'Already registered!';
+      }
       return UserModel.fromModel(userData)
           .copyWith(emailVerified: (user.emailConfirmedAt != null));
     } on AuthException catch (e) {
@@ -112,38 +107,27 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       // Authentication error
       throw ServerException(e.message.toString());
     } catch (e) {
-      // Other error
       throw ServerException(e.toString());
     }
   }
 
   @override
   Future<UserModel?> getCurrentUserData() async {
-    try {
-      if (currentUserSession != null) {
-        final userData = await supabaseClient
-            .from('users')
-            .select(userQuery)
-            .eq('id', currentUserSession!.user.id);
-        return UserModel.fromModel(userData.first).copyWith(
-            emailVerified: currentUserSession!.user.emailConfirmedAt != null);
-      }
-      return null;
-    } catch (e) {
-      throw ServerException(e.toString());
+    if (currentUserSession != null) {
+      final userData = await supabaseClient
+          .from('users')
+          .select(userQuery)
+          .eq('id', currentUserSession!.user.id);
+      return UserModel.fromModel(userData.first).copyWith(
+          emailVerified: currentUserSession!.user.emailConfirmedAt != null);
     }
+    return null;
   }
 
   @override
   Future<String> sendOtp(String email) async {
-    try {
-      await supabaseClient.auth.signInWithOtp(email: email);
-      return 'The OTP has been sent to the email $email';
-    } on AuthException catch (e) {
-      throw ServerException(e.message);
-    } catch (e) {
-      throw ServerException(e.toString());
-    }
+    await supabaseClient.auth.signInWithOtp(email: email);
+    return 'The OTP has been sent to the email $email';
   }
 
   @override
@@ -159,7 +143,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       );
       final user = response.user;
       if (user == null) {
-        throw ServerException('Error creating user!');
+        throw 'Error creating user!';
       }
       return user;
     });
@@ -174,33 +158,25 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     required String educationLevel,
     required List<String> examsPreparing,
   }) async {
-    try {
-      if (currentUserSession != null) {
-        await supabaseClient.from('users').update({
-          'first_name': firstName,
-          'last_name': lastName,
-          'birthdate': birthdate.toUtc().toIso8601String(),
-          'gender': gender,
-          'current_education': educationLevel,
-          'exams_preparing': examsPreparing,
-        }).eq(
-          'id',
-          currentUserSession!.user.id,
-        );
-        final userModel = await getCurrentUserData();
-        if (userModel == null || userModel is! AuthUserModel) {
-          throw ServerException('An unexpected error occed!');
-        }
-        return userModel;
-      } else {
-        throw ServerException('Login first!');
+    if (currentUserSession != null) {
+      await supabaseClient.from('users').update({
+        'first_name': firstName,
+        'last_name': lastName,
+        'birthdate': birthdate.toUtc().toIso8601String(),
+        'gender': gender,
+        'current_education': educationLevel,
+        'exams_preparing': examsPreparing,
+      }).eq(
+        'id',
+        currentUserSession!.user.id,
+      );
+      final userModel = await getCurrentUserData();
+      if (userModel == null || userModel is! AuthUserModel) {
+        throw 'An unexpected error occed!';
       }
-    } on AuthException catch (e) {
-      throw ServerException(e.message);
-    } on ServerException catch (e) {
-      throw ServerException(e.message);
-    } catch (e) {
-      throw ServerException(e.toString());
+      return userModel;
+    } else {
+      throw 'Login first!';
     }
   }
 }

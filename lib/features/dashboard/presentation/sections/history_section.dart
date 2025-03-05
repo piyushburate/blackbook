@@ -1,6 +1,7 @@
-import 'package:blackbook/core/theme/app_pallete.dart';
 import 'package:blackbook/core/common/widgets/search_input_field.dart';
 import 'package:flutter/material.dart';
+
+import '../../../../core/theme/app_theme.dart';
 
 class HistorySection extends StatefulWidget {
   const HistorySection({super.key});
@@ -48,13 +49,15 @@ class _HistorySectionState extends State<HistorySection> {
                 children: [
                   Row(
                     children: [
-                      const Flexible(
+                      Flexible(
                         child: Text(
                           'SSC CGI 2022 - Previous Year Paper (05 Dec, 2022)',
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
-                            color: AppPallete.darkTextColor,
+                            color: Theme.of(context)
+                                .extension<AppColors>()!
+                                .darkTextColor,
                           ),
                           overflow: TextOverflow.ellipsis,
                           maxLines: 2,
@@ -171,7 +174,7 @@ class _HistorySectionState extends State<HistorySection> {
                 ),
               ),
               const SizedBox(width: 12),
-              const Card(
+              Card(
                 child: Padding(
                   padding: EdgeInsets.all(14),
                   child: Row(
@@ -179,7 +182,9 @@ class _HistorySectionState extends State<HistorySection> {
                       Text(
                         'Filter',
                         style: TextStyle(
-                          color: AppPallete.darkTextColor,
+                          color: Theme.of(context)
+                              .extension<AppColors>()!
+                              .darkTextColor,
                           fontWeight: FontWeight.w500,
                         ),
                       ),

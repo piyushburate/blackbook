@@ -1,9 +1,9 @@
-import 'package:blackbook/core/theme/app_pallete.dart';
 import 'package:flutter/material.dart';
 
 class AppButton extends StatelessWidget {
   final void Function()? onPressed;
   final String? text;
+  final Widget? child;
   final Widget? leading;
   final Widget? trailing;
   final Color? backgroundColor;
@@ -11,10 +11,12 @@ class AppButton extends StatelessWidget {
   final double? borderWidth;
   final Color? borderColor;
   final double? borderRadius;
+  final bool isDense;
 
   const AppButton({
     super.key,
     this.text,
+    this.child,
     this.onPressed,
     this.leading,
     this.trailing,
@@ -23,6 +25,7 @@ class AppButton extends StatelessWidget {
     this.borderWidth,
     this.borderColor,
     this.borderRadius,
+    this.isDense = false,
   });
 
   @override
@@ -30,10 +33,12 @@ class AppButton extends StatelessWidget {
     return ElevatedButton(
       onPressed: onPressed,
       style: FilledButton.styleFrom(
-        fixedSize: Size.fromHeight(46),
-        backgroundColor: backgroundColor ?? AppPallete.primaryColor,
-        foregroundColor: foregroundColor ?? Colors.white,
-        iconColor: foregroundColor ?? Colors.white,
+        fixedSize: Size.fromHeight(isDense ? 38 : 46),
+        backgroundColor:
+            backgroundColor ?? Theme.of(context).colorScheme.primary,
+        foregroundColor:
+            foregroundColor ?? Theme.of(context).colorScheme.onPrimary,
+        iconColor: foregroundColor ?? Theme.of(context).colorScheme.onPrimary,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(borderRadius ?? 100),
           side: BorderSide(
@@ -42,17 +47,21 @@ class AppButton extends StatelessWidget {
           ),
         ),
         elevation: 0,
-        textStyle: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
-        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         spacing: 8,
         children: [
           if (leading != null) leading!,
-          if (text != null) Text(text!),
+          if (child != null) child!,
+          if (text != null && child == null)
+            Text(
+              text!,
+              style: TextStyle(
+                fontSize: isDense ? 14 : 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           if (trailing != null) trailing!,
         ],
       ),

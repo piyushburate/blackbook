@@ -1,5 +1,6 @@
-import 'package:blackbook/core/theme/app_pallete.dart';
 import 'package:flutter/material.dart';
+
+import '../../../../core/theme/app_theme.dart';
 
 class MultiSelectableTileList extends StatefulWidget {
   final List<String> items;
@@ -46,14 +47,14 @@ class _MultiSelectableTileListState extends State<MultiSelectableTileList> {
 
           return ListTile(
             selected: selected,
-            selectedColor: AppPallete.primaryColor,
-            selectedTileColor: AppPallete.primaryColor.withAlpha(8),
+            selectedColor: Theme.of(context).colorScheme.primary,
+            selectedTileColor:
+                Theme.of(context).colorScheme.primary.withAlpha(8),
             title: Text(
               widget.items[index],
-              style: Theme.of(context)
-                  .textTheme
-                  .labelLarge
-                  ?.copyWith(color: selected ? AppPallete.primaryColor : null),
+              style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                  color:
+                      selected ? Theme.of(context).colorScheme.primary : null),
             ),
             trailing: Checkbox(
               value: selected,
@@ -64,8 +65,10 @@ class _MultiSelectableTileListState extends State<MultiSelectableTileList> {
               side: BorderSide(
                 width: 1.5,
                 color: selected
-                    ? AppPallete.primaryColor
-                    : AppPallete.borderLightColor,
+                    ? Theme.of(context).colorScheme.primary
+                    : Theme.of(context)
+                        .extension<AppColors>()!
+                        .borderLightColor,
               ),
             ),
             onTap: onSelected,

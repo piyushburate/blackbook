@@ -1,5 +1,6 @@
-import 'package:blackbook/core/common/entities/exam.dart';
-import 'package:blackbook/core/common/entities/user.dart';
+import 'avatar.dart';
+import 'exam.dart';
+import 'user.dart';
 
 abstract class AuthUser extends User {
   final String firstName;
@@ -10,6 +11,7 @@ abstract class AuthUser extends User {
   final List<String> examsPreparing;
   final Exam? selectedExam;
   final String? mobile;
+  final Avatar? avatar;
 
   String get fullName;
 
@@ -25,5 +27,6 @@ abstract class AuthUser extends User {
     required this.examsPreparing,
     this.selectedExam,
     this.mobile,
+    this.avatar,
   });
 }

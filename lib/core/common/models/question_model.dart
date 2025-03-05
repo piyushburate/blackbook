@@ -1,5 +1,6 @@
 import 'package:blackbook/core/common/entities/question.dart';
 import 'package:blackbook/core/common/models/qset_model.dart';
+import 'package:blackbook/core/common/models/subject_model.dart';
 import 'package:blackbook/core/common/models/test_model.dart';
 
 class QsetQuestionModel extends QsetQuestion {
@@ -7,6 +8,7 @@ class QsetQuestionModel extends QsetQuestion {
     required super.id,
     required super.title,
     required super.explanation,
+    required super.reference,
     required super.optionA,
     required super.optionB,
     required super.optionC,
@@ -21,6 +23,7 @@ class QsetQuestionModel extends QsetQuestion {
       title: map['title'] ?? '',
       qset: QsetModel.fromJson(map['qset'] ?? {}),
       explanation: map['explanation'],
+      reference: map['reference'],
       optionA: map['option_a'] ?? '',
       optionB: map['option_b'] ?? '',
       optionC: map['option_c'] ?? '',
@@ -35,6 +38,7 @@ class TestQuestionModel extends TestQuestion {
     required super.id,
     required super.title,
     required super.explanation,
+    required super.reference,
     required super.optionA,
     required super.optionB,
     required super.optionC,
@@ -43,6 +47,7 @@ class TestQuestionModel extends TestQuestion {
     required super.test,
     required super.marks,
     required super.negativeMarks,
+    required super.subject,
   });
 
   factory TestQuestionModel.fromJson(Map<String, dynamic> map) {
@@ -51,13 +56,15 @@ class TestQuestionModel extends TestQuestion {
       title: map['title'] ?? '',
       test: TestModel.fromJson(map['test'] ?? {}),
       explanation: map['explanation'],
+      reference: map['reference'],
       optionA: map['option_a'] ?? '',
       optionB: map['option_b'] ?? '',
       optionC: map['option_c'] ?? '',
       optionD: map['option_d'] ?? '',
       answer: QuestionOption.fromValue(map['answer'] ?? ''),
-      marks: ((map['marks'] ?? 0) as num).toInt(),
-      negativeMarks: ((map['negative_marks'] ?? 0) as num).toInt(),
+      marks: ((map['marks'] ?? 0) as int).toInt(),
+      negativeMarks: ((map['negative_marks'] ?? 0) as int).toInt(),
+      subject: SubjectModel.fromJson(map['subject'] ?? {}),
     );
   }
 }

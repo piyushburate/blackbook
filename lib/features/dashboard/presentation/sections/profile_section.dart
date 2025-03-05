@@ -1,12 +1,14 @@
-import 'package:blackbook/core/common/cubits/app_user/app_user_cubit.dart';
+import 'package:blackbook/core/common/dialogs/update_dialog.dart';
 import 'package:blackbook/core/common/entities/auth_user.dart';
 import 'package:blackbook/core/constants/app_images.dart';
-import 'package:blackbook/core/theme/app_pallete.dart';
-import 'package:blackbook/core/common/widgets/app_button.dart';
+import 'package:blackbook/core/theme/app_theme.dart';
+import 'package:blackbook/features/dashboard/presentation/dialogs/avatar_selection_dialog.dart';
+import 'package:blackbook/core/common/dialogs/logout_dialog.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:share_plus_dialog/share_plus_dialog.dart';
 
 class ProfileSection extends StatelessWidget {
   final AuthUser authUser;
@@ -15,7 +17,7 @@ class ProfileSection extends StatelessWidget {
     (Icons.manage_accounts_outlined, 'Account Settings'),
     (Icons.notifications_none_outlined, 'Notification Settings'),
     (Icons.color_lens_outlined, 'App Theme'),
-    (Icons.share_outlined, 'Share Out App'),
+    (Icons.share_outlined, 'Share Our App'),
     (Icons.lock_outlined, 'Privacy Policy'),
     (Icons.assignment_outlined, 'Terms of Service'),
   ];
@@ -25,119 +27,175 @@ class ProfileSection extends StatelessWidget {
     return CustomScrollView(
       physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
       slivers: [
-        SliverAppBar(
-          pinned: true,
-          centerTitle: true,
-          toolbarHeight: 200,
-          title: buildProfileSection(),
+        SliverToBoxAdapter(
+          child: buildProfileSection(context),
         ),
-        SliverGap(12),
-        SliverList.list(
-          children: [
-            ...List.generate(
-              settingList.length,
-              (index) {
-                return buildSettingTile(
-                  title: settingList[index].$2,
-                  icon: settingList[index].$1,
-                );
-              },
-            ),
-            buildSettingTile(
-              title: 'Log Out',
-              icon: Icons.logout_outlined,
-              onTap: () async {
-                await showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      title: Text('Are you really want to log out ?'),
-                      actions: [
-                        AppButton(
-                          text: 'Yes',
-                          trailing: Icon(Icons.check),
-                          backgroundColor: AppPallete.errorColor,
-                          foregroundColor: AppPallete.whiteColor,
-                          onPressed: () {
-                            context.read<AppUserCubit>().logOut();
-                            context.pop();
-                          },
-                        ),
-                        AppButton(
-                          text: 'No',
-                          trailing: Icon(Icons.close),
-                          backgroundColor: AppPallete.normalTextColor,
-                          foregroundColor: AppPallete.whiteColor,
-                          onPressed: () => context.pop(),
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
-            )
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget buildProfileSection() {
-    return Column(
-      children: [
-        CircleAvatar(
-          radius: 60,
-          backgroundImage: const AssetImage(AppImages.profileAvatar),
-          child: Transform.translate(
-            offset: const Offset(35, 45),
-            child: IconButton.filled(
-              onPressed: () {},
-              style: IconButton.styleFrom(
-                backgroundColor: Colors.grey.shade300.withAlpha(180),
-                foregroundColor: Colors.grey.shade800,
-                shape: const CircleBorder(side: BorderSide()),
+        SliverPadding(
+          padding: const EdgeInsets.all(20),
+          sliver: SliverList.list(
+            children: [
+              Divider(),
+              Gap(20),
+              buildSettingTile(
+                title: 'Account Settings',
+                icon: Icons.manage_accounts_outlined,
+                onTap: () => context.push('/settings/account_settings'),
               ),
-              icon: const Icon(Icons.edit_outlined),
-            ),
-          ),
-        ),
-        const SizedBox(height: 12),
-        Text(
-          authUser.fullName,
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        Text(
-          authUser.educationLevel,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w300,
+              buildSettingTile(
+                title: 'Notification Settings',
+                icon: Icons.notifications_none_outlined,
+                onTap: () {},
+              ),
+              buildSettingTile(
+                title: 'App Theme',
+                icon: Icons.color_lens_outlined,
+                onTap: () => context.push('/settings/app_theme'),
+              ),
+              Divider(),
+              Gap(15),
+              buildSettingTile(
+                title: 'Share Our App',
+                icon: Icons.share_outlined,
+                onTap: () => shareApp(context),
+              ),
+              buildSettingTile(
+                title: 'Privacy Policy',
+                icon: Icons.lock_outlined,
+                onTap: () {},
+              ),
+              buildSettingTile(
+                title: 'Terms of Service',
+                icon: Icons.assignment_outlined,
+                onTap: () {},
+              ),
+              buildSettingTile(
+                title: 'Check for Updates',
+                icon: Icons.update_sharp,
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => UpdateDialog(),
+                  );
+                },
+              ),
+              Divider(),
+              Gap(15),
+              buildSettingTile(
+                title: 'Log Out',
+                icon: Icons.logout_outlined,
+                backgroundColor:
+                    Theme.of(context).colorScheme.error.withAlpha(15),
+                foregroundColor: Theme.of(context).colorScheme.error,
+                onTap: () async {
+                  await showDialog(
+                    context: context,
+                    builder: (context) => LogoutDialog(),
+                  );
+                },
+              )
+            ],
           ),
         ),
       ],
     );
   }
 
-  Widget buildSettingTile(
-      {required String title, required IconData icon, VoidCallback? onTap}) {
+  Widget buildProfileSection(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
-      child: ListTile(
-        onTap: onTap ?? () {},
-        leading: Icon(icon, size: 20),
-        trailing: Icon(Icons.arrow_forward_ios_rounded, size: 14),
-        title: Text(
-          title,
-          overflow: TextOverflow.ellipsis,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: AppPallete.darkTextColor,
+      padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
+      child: Column(
+        children: [
+          Material(
+            shape: RoundedRectangleBorder(
+              side: BorderSide(
+                width: 0.5,
+                color:
+                    Theme.of(context).extension<AppColors>()!.borderNormalColor,
+              ),
+              borderRadius: BorderRadius.circular(100),
+            ),
+            child: CircleAvatar(
+              radius: 60,
+              backgroundColor: Theme.of(context).colorScheme.surface,
+              backgroundImage: (authUser.avatar == null)
+                  ? AssetImage(AppImages.profileAvatar)
+                  : CachedNetworkImageProvider(authUser.avatar!.url),
+              child: Transform.translate(
+                offset: const Offset(35, 45),
+                child: IconButton.filled(
+                  onPressed: () => openAvatarSelectionDialog(context),
+                  style: IconButton.styleFrom(
+                    backgroundColor: Colors.grey.shade300.withAlpha(200),
+                    foregroundColor: Colors.grey.shade800,
+                    shape: const CircleBorder(side: BorderSide()),
+                  ),
+                  icon: const Icon(Icons.edit_outlined),
+                ),
+              ),
+            ),
           ),
-        ),
+          Gap(12),
+          Text(
+            authUser.fullName,
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          Text(
+            authUser.educationLevel,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w300,
+            ),
+          ),
+        ],
       ),
+    );
+  }
+
+  Widget buildSettingTile({
+    required String title,
+    required IconData icon,
+    Color? backgroundColor,
+    Color? foregroundColor,
+    VoidCallback? onTap,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 15),
+      child: ListTile(
+        tileColor: backgroundColor,
+        iconColor: foregroundColor,
+        textColor: foregroundColor,
+        leading: Icon(icon, size: 18),
+        title: Text(title),
+        trailing: Icon(Icons.arrow_forward_ios_rounded, size: 14),
+        onTap: onTap,
+      ),
+    );
+  }
+
+  void shareApp(BuildContext context) async {
+    ShareDialog.share(
+      context,
+      dialogTitle: 'Share Our App',
+      body:
+          'https://play.google.com/store/apps/details?id=com.example.blackbook',
+      platforms: SharePlatform.defaults,
+    );
+  }
+
+  void openAvatarSelectionDialog(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      useSafeArea: true,
+      isScrollControlled: true,
+      enableDrag: false,
+      shape: Border(),
+      barrierColor: Colors.transparent,
+      builder: (context) {
+        return AvatarSelectionDialog(initialAvatar: authUser.avatar);
+      },
     );
   }
 }

@@ -1,10 +1,7 @@
 import 'package:blackbook/core/common/cubits/app_user/app_user_cubit.dart';
 import 'package:blackbook/core/common/entities/auth_user.dart';
-import 'package:blackbook/core/common/entities/exam.dart';
 import 'package:blackbook/core/constants/app_images.dart';
-import 'package:blackbook/core/theme/app_pallete.dart';
 import 'package:blackbook/features/dashboard/presentation/cubits/exam/exam_cubit.dart';
-import 'package:blackbook/core/common/widgets/search_input_field.dart';
 import 'package:card_swiper/card_swiper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -102,64 +99,6 @@ class _HomeSectionState extends State<HomeSection> {
             );
           },
         ),
-      ),
-    );
-  }
-
-  Widget buildSelectionSection(Exam exam) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Choose a set',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          const Gap(6),
-          Row(
-            children: [
-              Flexible(
-                flex: 1,
-                child: SearchInputField(
-                  controller: TextEditingController(),
-                  hintText: "Search topic...",
-                ),
-              ),
-              const Gap(12),
-              SizedBox(
-                height: 50,
-                child: Card(
-                  child: InkWell(
-                    // onTap: () => showExamSelectionDialog(),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 12,
-                      ),
-                      child: Row(
-                        children: [
-                          Text(
-                            exam.name,
-                            style: const TextStyle(
-                              color: AppPallete.darkTextColor,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          const Icon(Icons.arrow_outward_rounded, size: 18),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
       ),
     );
   }

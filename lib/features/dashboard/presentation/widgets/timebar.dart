@@ -1,26 +1,41 @@
-import 'package:blackbook/core/theme/app_pallete.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
+import 'package:stop_watch_timer/stop_watch_timer.dart';
 
-class TimerBar extends StatelessWidget {
+class Timebar extends StatefulWidget {
   final int? maxTime;
-  final int currentTime;
-  const TimerBar({
-    super.key,
-    this.maxTime,
-    this.currentTime = 0,
-  });
+  // final int currentTime;
+  final StopWatchTimer timer;
+  const Timebar(
+      {super.key,
+      this.maxTime,
+      // this.currentTime = 0,
+      required this.timer});
+
+  @override
+  State<Timebar> createState() => _TimebarState();
+}
+
+class _TimebarState extends State<Timebar> {
+  int get currentTime => widget.timer.secondTime.value;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.timer.secondTime.listen((event) {
+      setState(() {});
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return LinearPercentIndicator(
       lineHeight: 28,
       animation: true,
-      // percent: (maxTime == null) ? 0 : (currentTime / maxTime!),
       percent: getCurrentPercent(),
       animateFromLastPercent: true,
-      backgroundColor: Colors.grey.shade300,
-      progressColor: AppPallete.primaryColor,
+      backgroundColor: Theme.of(context).colorScheme.onSurface.withAlpha(30),
+      progressColor: Theme.of(context).colorScheme.primary,
       barRadius: const Radius.circular(15),
       padding: EdgeInsets.zero,
       center: Padding(
@@ -39,7 +54,7 @@ class TimerBar extends StatelessWidget {
 
   String getTimeText() {
     String timeUnit = "seconds";
-    int time = (maxTime ?? 0) - currentTime;
+    int time = (widget.maxTime ?? 0) - currentTime;
     if (time >= 60) {
       timeUnit = 'minutes';
       time = (time / 60).ceil();
@@ -47,11 +62,12 @@ class TimerBar extends StatelessWidget {
     if (time.isNegative) {
       time *= -1;
     }
-    return "$time $timeUnit ${(maxTime == null) ? '' : 'left'}";
+    return "$time $timeUnit ${(widget.maxTime == null) ? '' : 'left'}";
   }
 
   double getCurrentPercent() {
-    double percent = (maxTime == null) ? 0 : (currentTime / maxTime!);
+    double percent =
+        (widget.maxTime == null) ? 0 : (currentTime / widget.maxTime!);
     if (percent < 0) {
       percent = 0;
     }

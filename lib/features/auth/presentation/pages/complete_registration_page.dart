@@ -1,7 +1,9 @@
+// ignore: unused_import
 import 'package:blackbook/core/theme/app_pallete.dart';
 import 'package:blackbook/core/common/widgets/app_button.dart';
+import 'package:blackbook/core/theme/app_theme.dart';
 import 'package:blackbook/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:blackbook/features/auth/presentation/widgets/input_field.dart';
+import 'package:blackbook/core/common/widgets/input_field.dart';
 import 'package:blackbook/features/auth/presentation/widgets/multi_selectable_tile_list.dart';
 import 'package:blackbook/features/auth/presentation/widgets/selectable_tile_list.dart';
 import 'package:date_field/date_field.dart';
@@ -28,7 +30,6 @@ class _CompleteRegistrationPageState extends State<CompleteRegistrationPage> {
   final _lastNameController = TextEditingController();
   DateTime? birthdate;
   String? gender;
-  final List<String> genderList = ['Male', 'Female', 'Other'];
   int? educationLevel;
   final List<String> educationLevelList = [
     'Secondary School (10th Std / SSC)',
@@ -118,8 +119,9 @@ class _CompleteRegistrationPageState extends State<CompleteRegistrationPage> {
                     onPressed: () => backBtnClick(),
                     text: 'Back',
                     leading: Icon(Icons.arrow_back_rounded),
-                    backgroundColor: AppPallete.backgroundColor,
-                    foregroundColor: AppPallete.darkTextColor,
+                    backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                    foregroundColor:
+                        Theme.of(context).extension<AppColors>()?.darkTextColor,
                     borderWidth: 2,
                   ),
                 if (pageIndex > 0) Gap(12),
@@ -161,7 +163,7 @@ class _CompleteRegistrationPageState extends State<CompleteRegistrationPage> {
               style: Theme.of(context)
                   .textTheme
                   .bodyMedium
-                  ?.copyWith(color: AppPallete.errorColor),
+                  ?.copyWith(color: Theme.of(context).colorScheme.error),
             ),
           MultiSelectableTileList(
             selectedIndexes: examsPreparing,
@@ -199,7 +201,7 @@ class _CompleteRegistrationPageState extends State<CompleteRegistrationPage> {
               style: Theme.of(context)
                   .textTheme
                   .bodyMedium
-                  ?.copyWith(color: AppPallete.errorColor),
+                  ?.copyWith(color: Theme.of(context).colorScheme.error),
             ),
           SelectableTileList(
             initiallySelected: educationLevel,
@@ -292,8 +294,7 @@ class _CompleteRegistrationPageState extends State<CompleteRegistrationPage> {
                   },
                   firstDate: DateTime(1900),
                   lastDate: DateTime.now(),
-                  initialPickerDateTime:
-                      DateTime.now().add(const Duration(days: 20)),
+                  initialPickerDateTime: DateTime(2008),
                   onChanged: (DateTime? value) {
                     birthdate = value;
                     setState(() {});

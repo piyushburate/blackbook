@@ -1,38 +1,67 @@
 import 'package:blackbook/core/common/entities/attempted_question.dart';
 import 'package:blackbook/core/common/entities/qset.dart';
 import 'package:blackbook/core/common/entities/question.dart';
+import 'package:blackbook/core/common/widgets/app_latex_viewer.dart';
 import 'package:choice/choice.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:gap/gap.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/common/pages/error_page.dart';
+import '../../../../core/common/widgets/app_loader.dart';
+import '../cubits/exam/exam_cubit.dart';
+
 class QsetPage extends StatefulWidget {
-  final Qset qset;
-  final List<QsetAttemptedQuestion> attemptedQuestions;
-  const QsetPage(
-      {super.key, required this.qset, required this.attemptedQuestions});
+  final String id;
+  const QsetPage(this.id, {super.key});
 
   @override
   State<QsetPage> createState() => _QsetPageState();
 }
 
 class _QsetPageState extends State<QsetPage> {
+  Qset? qset;
+  bool loading = true;
+
   final List<String> questionTypes = ['All', 'Unsolved', 'Solved'];
   int selectedQuestionType = 0;
-  Qset get qset => widget.qset;
-  late List<QsetAttemptedQuestion?> attempts;
+  List<QsetAttemptedQuestion?> attempts = [];
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      fetchQset();
+    });
+  }
+
+  void fetchQset() async {
+    if (!loading) {
+      setState(() => loading = true);
+    }
+    final qset = await GetIt.instance<ExamCubit>().getQsetFromId(widget.id);
+    if (qset != null) {
+      this.qset = qset;
+      await fetchAttemptedQuestions(qset);
+    }
+    setState(() {
+      loading = false;
+    });
+  }
+
+  Future<void> fetchAttemptedQuestions(Qset qset) async {
+    final attemptedQuestions =
+        await GetIt.instance<ExamCubit>().getQsetAttemptedQuestions(qset);
     attempts = List.generate(
-      widget.qset.questions.length,
+      qset.questions.length,
       (index) {
-        final attemptIndex = widget.attemptedQuestions.indexWhere(
+        final attemptIndex = attemptedQuestions.indexWhere(
           (element) => element.question.id == qset.questions[index].id,
         );
         if (attemptIndex != -1) {
-          return widget.attemptedQuestions[attemptIndex];
+          return attemptedQuestions[attemptIndex];
         }
         return null;
       },
@@ -41,6 +70,16 @@ class _QsetPageState extends State<QsetPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (loading) {
+      return AppLoader();
+    }
+    if (qset == null) {
+      return ErrorPage(
+        title: 'Error!',
+        subtitle: 'No Subject Found!',
+        onRetry: fetchQset,
+      );
+    }
     return SafeArea(
       child: Scaffold(
         body: CustomScrollView(
@@ -61,7 +100,7 @@ class _QsetPageState extends State<QsetPage> {
             ),
             SliverGap(12),
             SliverToBoxAdapter(child: buildQestionTypeTablist()),
-            buildQuestionList(qset.questions),
+            buildQuestionList(qset!.questions),
           ],
         ),
       ),
@@ -84,28 +123,27 @@ class _QsetPageState extends State<QsetPage> {
           }
           return Padding(
             padding: const EdgeInsets.only(bottom: 12),
-            child: ListTile(
-              onTap: () => context.push(
-                '/qset/${qset.id}/practice',
-                extra: questions[index].id,
-              ),
-              leading: Text('${index + 1}.'),
-              trailing: (attempt == null)
-                  ? Icon(Icons.arrow_forward_ios_rounded, size: 12)
-                  : question.isCorrect(attempt.selectedOption)
-                      ? Icon(Icons.check, color: Colors.green)
-                      : Icon(Icons.close, color: Colors.red),
-              horizontalTitleGap: 0,
-              title: Text(
-                question.title.trim(),
-                maxLines: 2,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  overflow: TextOverflow.ellipsis,
+            child: Material(
+              type: MaterialType.transparency,
+              child: ListTile(
+                onTap: () => context.push(
+                  '/qset/${qset!.id}/practice',
+                  extra: questions[index].id,
+                ),
+                trailing: (attempt == null)
+                    ? Icon(Icons.arrow_forward_ios_rounded, size: 12)
+                    : question.isCorrect(attempt.selectedOption)
+                        ? Icon(Icons.check, color: Colors.green)
+                        : Icon(Icons.close, color: Colors.red),
+                horizontalTitleGap: 8,
+                leading: Text('${index + 1}.',
+                    style: Theme.of(context).textTheme.titleMedium),
+                title: AppLatexViewer(
+                  question.title,
+                  maxLines: 3,
                 ),
               ),
-            ),
+            ).animate(delay: (index * 100).ms).slideX().fade(),
           );
         },
       ),
@@ -147,14 +185,14 @@ class _QsetPageState extends State<QsetPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          qset.title,
+          qset!.title,
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w500,
           ),
         ),
         Text(
-          '${qset.questions.length} Questions',
+          '${qset!.questions.length} Questions',
           maxLines: 2,
           style: TextStyle(
             fontSize: 14,
