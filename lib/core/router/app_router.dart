@@ -5,10 +5,12 @@ import 'package:blackbook/features/auth/presentation/pages/complete_registration
 import 'package:blackbook/features/auth/presentation/pages/login_page.dart';
 import 'package:blackbook/features/auth/presentation/pages/signup_page.dart';
 import 'package:blackbook/features/auth/presentation/pages/verify_otp_page.dart';
-import 'package:blackbook/features/dashboard/presentation/pages/dashboard_page.dart';
+import 'package:blackbook/features/dashboard/presentation/pages/dashboard/dashboard_page.dart';
 import 'package:blackbook/features/dashboard/presentation/pages/practice_page.dart';
 import 'package:blackbook/features/dashboard/presentation/pages/qset_page.dart';
 import 'package:blackbook/features/dashboard/presentation/pages/subject_page.dart';
+import 'package:blackbook/features/dashboard/presentation/pages/test/test_page.dart';
+import 'package:blackbook/features/dashboard/presentation/pages/test/test_result_page.dart';
 import 'package:blackbook/features/settings/presentation/pages/account_settings_page.dart';
 import 'package:blackbook/features/settings/presentation/pages/change_password_page.dart';
 import 'package:blackbook/features/settings/presentation/pages/edit_personal_details_page.dart';
@@ -84,6 +86,18 @@ class AppRouter {
             state.pathParameters['id'] ?? '',
             initialQuestionId: state.extra.toString(),
           );
+        },
+      ),
+      GoRoute(
+        path: '/test/:id',
+        builder: (context, state) {
+          return TestPage(state.pathParameters['id'] ?? '');
+        },
+      ),
+      GoRoute(
+        path: '/test/result/:id',
+        builder: (context, state) {
+          return TestResultPage(state.pathParameters['id'] ?? '');
         },
       ),
       GoRoute(

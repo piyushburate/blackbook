@@ -8,6 +8,9 @@ class SubjectModel extends Subject {
     required super.name,
     required super.exam,
     required super.qsets,
+    required super.time,
+    required super.marks,
+    required super.negativeMarks,
   });
 
   factory SubjectModel.fromJson(Map<String, dynamic> map) {
@@ -21,6 +24,9 @@ class SubjectModel extends Subject {
               (index) => QsetModel.fromJson(map['qsets'][index]),
             )
           : [],
+      time: ((map['time'] ?? 0) as num).toInt(),
+      marks: ((map['marks'] ?? 0) as num).toInt(),
+      negativeMarks: ((map['negative_marks'] ?? 0) as num).toInt(),
     );
   }
 }

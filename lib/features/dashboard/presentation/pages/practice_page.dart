@@ -1,4 +1,4 @@
-import 'package:blackbook/features/dashboard/presentation/cubits/page_timer/page_timer_cubit.dart';
+import 'package:blackbook/features/dashboard/presentation/cubits/practice_page_timer/practice_page_timer_cubit.dart';
 import 'package:blackbook/features/dashboard/presentation/widgets/qset_question_card.dart';
 import 'package:blackbook/features/dashboard/presentation/widgets/timebar.dart';
 import 'package:flutter/material.dart';
@@ -80,11 +80,11 @@ class _PracticePageState extends State<PracticePage> {
       );
     }
 
-    return BlocProvider<PageTimerCubit>(
-      create: (context) => PageTimerCubit(
+    return BlocProvider<PracticePageTimerCubit>(
+      create: (context) => PracticePageTimerCubit(
         length: qset!.questions.length,
       ),
-      child: BlocBuilder<PageTimerCubit, int>(
+      child: BlocBuilder<PracticePageTimerCubit, int>(
         builder: (context, state) {
           return SafeArea(
             child: Scaffold(
@@ -103,7 +103,7 @@ class _PracticePageState extends State<PracticePage> {
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
                     child: Timebar(
-                      timer: context.read<PageTimerCubit>().timer,
+                      timer: context.read<PracticePageTimerCubit>().timer,
                     ),
                   ),
                 ),
@@ -145,7 +145,7 @@ class _PracticePageState extends State<PracticePage> {
                       ),
                     ),
                     Expanded(
-                      child: BlocBuilder<PageTimerCubit, int>(
+                      child: BlocBuilder<PracticePageTimerCubit, int>(
                         builder: (context, state) {
                           return AppButton(
                             text: 'Check Answer',
@@ -184,7 +184,7 @@ class _PracticePageState extends State<PracticePage> {
         currentPage = value;
       });
       context
-          .read<PageTimerCubit>()
+          .read<PracticePageTimerCubit>()
           .changeIndex(value, (attempts[currentPage] == null));
     }
   }
@@ -205,13 +205,15 @@ class _PracticePageState extends State<PracticePage> {
 
   void checkAnswer(BuildContext context) async {
     EasyLoading.show();
-    context.read<PageTimerCubit>().saveTimer();
-    final attemptedQuestion =
-        await context.read<ExamCubit>().saveQsetAttemptedQuestion(
-              question: qset!.questions[currentPage],
-              option: answers[currentPage]!,
-              time: context.read<PageTimerCubit>().timers[currentPage] ?? -1,
-            );
+    context.read<PracticePageTimerCubit>().saveTimer();
+    final attemptedQuestion = await context
+        .read<ExamCubit>()
+        .saveQsetAttemptedQuestion(
+          question: qset!.questions[currentPage],
+          option: answers[currentPage]!,
+          time:
+              context.read<PracticePageTimerCubit>().timers[currentPage] ?? -1,
+        );
     if (attemptedQuestion != null) {
       attempts[currentPage] = attemptedQuestion;
     }

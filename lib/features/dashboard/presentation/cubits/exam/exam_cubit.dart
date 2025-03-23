@@ -5,6 +5,7 @@ import 'package:blackbook/core/common/entities/qset.dart';
 import 'package:blackbook/core/common/entities/question.dart';
 import 'package:blackbook/core/common/entities/subject.dart';
 import 'package:blackbook/core/usecase/use_case.dart';
+import 'package:blackbook/features/dashboard/domain/usecases/get_exam.dart';
 import 'package:blackbook/features/dashboard/domain/usecases/get_qset_attempted_questions.dart';
 import 'package:blackbook/features/dashboard/domain/usecases/get_qset.dart';
 import 'package:blackbook/features/dashboard/domain/usecases/get_subject.dart';
@@ -22,6 +23,7 @@ class ExamCubit extends Cubit<ExamState> {
   final AppUserCubit _appUserCubit;
   final ListExams _listExams;
   final SelectExam _selectExam;
+  final GetExam _getExam;
   final GetSubject _getSubject;
   final GetQset _getQset;
   final SaveQsetAttemptedQuestion _saveAttemptedQuestion;
@@ -30,6 +32,7 @@ class ExamCubit extends Cubit<ExamState> {
     required AppUserCubit appUserCubit,
     required ListExams listExams,
     required SelectExam selectExam,
+    required GetExam getExam,
     required GetSubject getSubject,
     required GetQset getQset,
     required SaveQsetAttemptedQuestion saveAttemptedQuestion,
@@ -37,6 +40,7 @@ class ExamCubit extends Cubit<ExamState> {
   })  : _appUserCubit = appUserCubit,
         _listExams = listExams,
         _selectExam = selectExam,
+        _getExam = getExam,
         _getSubject = getSubject,
         _getQset = getQset,
         _saveAttemptedQuestion = saveAttemptedQuestion,
@@ -71,6 +75,18 @@ class ExamCubit extends Cubit<ExamState> {
         emit(ExamSelected(newExam));
       },
     );
+  }
+
+  Future<Exam?> getExamFromId(String id) async {
+    Exam? result;
+    final response = await _getExam(GetExamParams(id));
+    response.fold(
+      (failure) {
+        EasyLoading.showToast(failure.message.toString());
+      },
+      (exam) => result = exam,
+    );
+    return result;
   }
 
   Future<Subject?> getSubjectFromId(String id) async {

@@ -1,14 +1,14 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 
-class PageTimerCubit extends Cubit<int> {
+class PracticePageTimerCubit extends Cubit<int> {
   final StopWatchTimer timer = StopWatchTimer(
     refreshTime: 1000,
     mode: StopWatchMode.countUp,
   );
   late List<int?> timers;
 
-  PageTimerCubit({
+  PracticePageTimerCubit({
     required int length,
   }) : super(0) {
     timer.onStartTimer();

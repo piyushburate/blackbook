@@ -6,5 +6,6 @@ import 'package:fpdart/fpdart.dart';
 abstract interface class ExamRepository {
   Future<Either<Failure, List<Exam>>> listExams();
   Future<Either<Failure, Exam>> selectUserExam(Exam exam);
+  Future<Either<Failure, Exam>> getExamFromId(String id);
   Future<Either<Failure, Subject>> getSubjectFromId(String id);
 }

@@ -32,4 +32,8 @@ class TestAttemptedQuestion extends AttemptedQuestion {
     required this.testAttempt,
     required this.question,
   });
+
+  bool isCorrect() {
+    return question.isCorrect(selectedOption);
+  }
 }

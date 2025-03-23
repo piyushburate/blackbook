@@ -1,6 +1,7 @@
 import 'package:blackbook/core/common/entities/test.dart';
 import 'package:blackbook/core/common/models/exam_model.dart';
 import 'package:blackbook/core/common/models/question_model.dart';
+import 'package:blackbook/core/common/models/test_attempt_model.dart';
 
 class TestModel extends Test {
   TestModel({
@@ -10,6 +11,7 @@ class TestModel extends Test {
     required super.totalTime,
     required super.totalQuestions,
     required super.questions,
+    required super.attempts,
   });
 
   factory TestModel.fromJson(Map<String, dynamic> map) {
@@ -24,6 +26,12 @@ class TestModel extends Test {
               map['test_questions'].length,
               (index) =>
                   TestQuestionModel.fromJson(map['test_questions'][index]),
+            )
+          : [],
+      attempts: (map['test_attempts'] != null)
+          ? List.generate(
+              map['test_attempts'].length,
+              (index) => TestAttemptModel.fromJson(map['test_attempts'][index]),
             )
           : [],
     );

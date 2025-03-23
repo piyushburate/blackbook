@@ -30,7 +30,7 @@ class Question {
   List<String> get options => [_optionA, _optionB, _optionC, _optionD];
 
   bool isCorrect(QuestionOption answer) {
-    return this.answer == answer;
+    return this.answer.index == answer.index;
   }
 
   Question({
@@ -67,8 +67,6 @@ class QsetQuestion extends Question {
 
 class TestQuestion extends Question {
   final Test test;
-  final int marks;
-  final int negativeMarks;
   final Subject subject;
   TestQuestion({
     required super.id,
@@ -81,8 +79,6 @@ class TestQuestion extends Question {
     required super.optionD,
     required super.answer,
     required this.test,
-    required this.marks,
-    required this.negativeMarks,
     required this.subject,
   });
 }

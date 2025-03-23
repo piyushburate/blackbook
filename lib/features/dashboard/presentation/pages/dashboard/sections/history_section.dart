@@ -1,7 +1,7 @@
 import 'package:blackbook/core/common/widgets/search_input_field.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../core/theme/app_theme.dart';
+import '../../../../../../core/theme/app_theme.dart';
 
 class HistorySection extends StatefulWidget {
   const HistorySection({super.key});
@@ -215,7 +215,7 @@ class _HistorySectionState extends State<HistorySection> {
             ),
           ),
           Text(
-            'View all your played history here',
+            'View all your history here',
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w300,

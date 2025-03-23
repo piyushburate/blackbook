@@ -41,4 +41,24 @@ class ThemeCubit extends Cubit<ThemeMode> {
         WidgetsBinding.instance.platformDispatcher.platformBrightness;
     return brightness == Brightness.dark;
   }
+
+  Future handleSystemUiOverlayStyle(Future showDialog) async {
+    _setTransparentSystemUiOverlayStyle();
+    final response = await showDialog;
+    setStatusBarTheme();
+    return response;
+  }
+
+  void _setTransparentSystemUiOverlayStyle() {
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        systemNavigationBarColor: Colors.transparent,
+        systemNavigationBarDividerColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+        systemNavigationBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.light,
+      ),
+    );
+  }
 }

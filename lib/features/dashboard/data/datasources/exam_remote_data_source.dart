@@ -9,6 +9,7 @@ import 'package:supabase_flutter/supabase_flutter.dart' as sp;
 abstract interface class ExamRemoteDataSource {
   Future<List<Exam>> listExams();
   Future<Exam> selectUserExam(Exam exam);
+  Future<Exam> getExamFromId(String id);
   Future<Subject> getSubjectFromId(String id);
 }
 
@@ -21,69 +22,56 @@ class ExamRemoteDataSourceImpl implements ExamRemoteDataSource {
     required this.appUserCubit,
   });
 
+  final examQuery =
+      'id, name, subjects(id, name, qsets(id, qset_questions(id))), tests(*, exam:exams(id), test_questions(id))';
+
   @override
   Future<List<Exam>> listExams() async {
-    try {
-      final examsData = await supabaseClient
-          .from('exams')
-          .select(
-              '*, subjects(id, name, exam:exams(*), qsets(id, qset_questions(id))), tests(*, exam:exams(id), test_questions(id)))')
-          .order('created_at');
-      List<Exam> result = List.generate(examsData.length, (index) {
-        return ExamModel.fromJson(examsData[index]);
-      });
-      return result;
-    } catch (e) {
-      throw ServerException(e.toString());
-    }
+    final examsData = await supabaseClient
+        .from('exams')
+        .select(examQuery)
+        .order('created_at');
+    List<Exam> result = List.generate(examsData.length, (index) {
+      return ExamModel.fromJson(examsData[index]);
+    });
+    return result;
   }
 
   @override
   Future<Exam> selectUserExam(Exam exam) async {
-    try {
-      final currentSession = supabaseClient.auth.currentSession;
-      if (currentSession == null) {
-        throw ServerException('User not authorized!');
-      }
-
-      final data = await supabaseClient
-          .from('users')
-          .update({
-            'selected_exam': exam.id,
-          })
-          .eq('id', currentSession.user.id)
-          .select(
-              'selected_exam:exams(*, subjects(id, name, qsets(id, qset_questions(id))), tests(*, exam:exams(id), test_questions(id)))')
-          .single();
-      if (data['selected_exam'] != null) {
-        return ExamModel.fromJson(data['selected_exam']);
-      }
-      throw ServerException('Error occured!');
-    } on sp.AuthException catch (e) {
-      throw ServerException(e.message);
-    } catch (e) {
-      throw ServerException(e.toString());
+    final currentSession = supabaseClient.auth.currentSession;
+    if (currentSession == null) {
+      throw ServerException('User not authorized!');
     }
+
+    await supabaseClient.from('users').update({
+      'selected_exam': exam.id,
+    }).eq('id', currentSession.user.id);
+    return await getExamFromId(exam.id);
+  }
+
+  @override
+  Future<Exam> getExamFromId(String id) async {
+    final examData = await supabaseClient
+        .from('exams')
+        .select(examQuery)
+        .eq('id', id)
+        .order('created_at', referencedTable: 'subjects')
+        .order('created_at', referencedTable: 'tests')
+        .single();
+    final result = ExamModel.fromJson(examData);
+    return result;
   }
 
   @override
   Future<Subject> getSubjectFromId(String id) async {
-    try {
-      final subjectData = await supabaseClient
-          .from('subjects')
-          .select(
-              '*, qsets(*, subject(id, name), qset_questions(id)), exam:exams(id, name)')
-          .eq('id', id)
-          .order('created_at');
-      if (subjectData.isEmpty) {
-        throw ServerException('Subject not found!');
-      }
-      final result = SubjectModel.fromJson(subjectData.first);
-      return result;
-    } on sp.AuthException catch (e) {
-      throw ServerException(e.message);
-    } catch (e) {
-      throw ServerException(e.toString());
-    }
+    final subjectData = await supabaseClient
+        .from('subjects')
+        .select(
+            '*, qsets(*, subject(id, name), qset_questions(id)), exam:exams(id, name)')
+        .eq('id', id)
+        .single();
+    final result = SubjectModel.fromJson(subjectData);
+    return result;
   }
 }

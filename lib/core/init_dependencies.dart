@@ -15,22 +15,31 @@ import 'package:blackbook/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:blackbook/features/dashboard/data/datasources/avatar_remote_data_source.dart';
 import 'package:blackbook/features/dashboard/data/datasources/exam_remote_data_source.dart';
 import 'package:blackbook/features/dashboard/data/datasources/qset_remote_data_source.dart';
+import 'package:blackbook/features/dashboard/data/datasources/test_remote_data_source.dart';
 import 'package:blackbook/features/dashboard/data/repositories/avatar_repository_impl.dart';
 import 'package:blackbook/features/dashboard/data/repositories/exam_repository_impl.dart';
 import 'package:blackbook/features/dashboard/data/repositories/qset_repository_impl.dart';
+import 'package:blackbook/features/dashboard/data/repositories/test_repository_impl.dart';
 import 'package:blackbook/features/dashboard/domain/repositories/avatar_repository.dart';
 import 'package:blackbook/features/dashboard/domain/repositories/exam_repository.dart';
 import 'package:blackbook/features/dashboard/domain/repositories/qset_repository.dart';
+import 'package:blackbook/features/dashboard/domain/repositories/test_repository.dart';
+import 'package:blackbook/features/dashboard/domain/usecases/add_test_attempt.dart';
+import 'package:blackbook/features/dashboard/domain/usecases/get_exam.dart';
 import 'package:blackbook/features/dashboard/domain/usecases/get_qset_attempted_questions.dart';
 import 'package:blackbook/features/dashboard/domain/usecases/get_qset.dart';
 import 'package:blackbook/features/dashboard/domain/usecases/get_subject.dart';
+import 'package:blackbook/features/dashboard/domain/usecases/get_test.dart';
+import 'package:blackbook/features/dashboard/domain/usecases/get_test_attempt.dart';
 import 'package:blackbook/features/dashboard/domain/usecases/list_avatars.dart';
 import 'package:blackbook/features/dashboard/domain/usecases/list_exams.dart';
+import 'package:blackbook/features/dashboard/domain/usecases/list_test_attempts.dart';
 import 'package:blackbook/features/dashboard/domain/usecases/save_qset_attempted_question.dart';
 import 'package:blackbook/features/dashboard/domain/usecases/select_exam.dart';
 import 'package:blackbook/features/dashboard/domain/usecases/set_user_avatar.dart';
 import 'package:blackbook/features/dashboard/presentation/cubits/dashboard/dashboard_cubit.dart';
 import 'package:blackbook/features/dashboard/presentation/cubits/exam/exam_cubit.dart';
+import 'package:blackbook/features/dashboard/presentation/cubits/test/test_cubit.dart';
 import 'package:blackbook/features/settings/data/datasources/profile_remote_data_source.dart';
 import 'package:blackbook/features/settings/data/repositories/profile_repository_impl.dart';
 import 'package:blackbook/features/settings/domain/repositories/profile_repository.dart';
@@ -93,6 +102,9 @@ void _initAuth() {
     ..registerLazySingleton<QsetRemoteDataSource>(
       () => QsetRemoteDataSourceImpl(serviceLocator()),
     )
+    ..registerLazySingleton<TestRemoteDataSource>(
+      () => TestRemoteDataSourceImpl(serviceLocator()),
+    )
     ..registerLazySingleton<AvatarRemoteDataSource>(
       () => AvatarRemoteDataSourceImpl(serviceLocator()),
     )
@@ -108,6 +120,9 @@ void _initAuth() {
     )
     ..registerLazySingleton<QsetRepository>(
       () => QsetRepositoryImpl(serviceLocator()),
+    )
+    ..registerLazySingleton<TestRepository>(
+      () => TestRepositoryImpl(serviceLocator()),
     )
     ..registerLazySingleton<AvatarRepository>(
       () => AvatarRepositoryImpl(serviceLocator()),
@@ -140,6 +155,9 @@ void _initAuth() {
     ..registerLazySingleton<SelectExam>(
       () => SelectExam(serviceLocator()),
     )
+    ..registerLazySingleton<GetExam>(
+      () => GetExam(serviceLocator()),
+    )
     ..registerLazySingleton<GetSubject>(
       () => GetSubject(serviceLocator()),
     )
@@ -151,6 +169,18 @@ void _initAuth() {
     )
     ..registerLazySingleton<GetQsetAttemptedQuestions>(
       () => GetQsetAttemptedQuestions(serviceLocator()),
+    )
+    ..registerLazySingleton<GetTest>(
+      () => GetTest(serviceLocator()),
+    )
+    ..registerLazySingleton<ListTestAttempts>(
+      () => ListTestAttempts(serviceLocator()),
+    )
+    ..registerLazySingleton<GetTestAttempt>(
+      () => GetTestAttempt(serviceLocator()),
+    )
+    ..registerLazySingleton<AddTestAttempt>(
+      () => AddTestAttempt(serviceLocator()),
     )
     ..registerLazySingleton<ListAvatars>(
       () => ListAvatars(serviceLocator()),
@@ -181,10 +211,19 @@ void _initAuth() {
         appUserCubit: serviceLocator(),
         listExams: serviceLocator(),
         selectExam: serviceLocator(),
+        getExam: serviceLocator(),
         getSubject: serviceLocator(),
         getQset: serviceLocator(),
         saveAttemptedQuestion: serviceLocator(),
         getAttemptedQuestions: serviceLocator(),
+      ),
+    )
+    ..registerLazySingleton<TestCubit>(
+      () => TestCubit(
+        getTest: serviceLocator(),
+        listTestAttempts: serviceLocator(),
+        getTestAttempt: serviceLocator(),
+        addTestAttempt: serviceLocator(),
       ),
     )
     ..registerLazySingleton<DashboardCubit>(

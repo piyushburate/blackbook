@@ -45,8 +45,6 @@ class TestQuestionModel extends TestQuestion {
     required super.optionD,
     required super.answer,
     required super.test,
-    required super.marks,
-    required super.negativeMarks,
     required super.subject,
   });
 
@@ -62,8 +60,6 @@ class TestQuestionModel extends TestQuestion {
       optionC: map['option_c'] ?? '',
       optionD: map['option_d'] ?? '',
       answer: QuestionOption.fromValue(map['answer'] ?? ''),
-      marks: ((map['marks'] ?? 0) as int).toInt(),
-      negativeMarks: ((map['negative_marks'] ?? 0) as int).toInt(),
       subject: SubjectModel.fromJson(map['subject'] ?? {}),
     );
   }

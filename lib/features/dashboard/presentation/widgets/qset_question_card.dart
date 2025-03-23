@@ -1,9 +1,7 @@
 import 'package:blackbook/core/common/entities/attempted_question.dart';
 import 'package:blackbook/core/common/entities/question.dart';
 import 'package:blackbook/core/common/widgets/app_latex_viewer.dart';
-import 'package:blackbook/features/dashboard/presentation/cubits/page_timer/page_timer_cubit.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
 import '../../../../core/theme/app_theme.dart';
@@ -33,8 +31,6 @@ class _QsetQuestionCardState extends State<QsetQuestionCard> {
   bool showExplanation = true;
 
   bool get isChecked => widget.attempt != null;
-
-  int get currentPage => context.read<PageTimerCubit>().state;
 
   @override
   Widget build(BuildContext context) {

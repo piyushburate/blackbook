@@ -22,6 +22,7 @@ class QsetPage extends StatefulWidget {
 }
 
 class _QsetPageState extends State<QsetPage> {
+  final _scrollController = ScrollController();
   Qset? qset;
   bool loading = true;
 
@@ -37,8 +38,8 @@ class _QsetPageState extends State<QsetPage> {
     });
   }
 
-  void fetchQset() async {
-    if (!loading) {
+  void fetchQset([bool showLoading = true]) async {
+    if (!loading && showLoading) {
       setState(() => loading = true);
     }
     final qset = await GetIt.instance<ExamCubit>().getQsetFromId(widget.id);
@@ -46,8 +47,11 @@ class _QsetPageState extends State<QsetPage> {
       this.qset = qset;
       await fetchAttemptedQuestions(qset);
     }
+
     setState(() {
-      loading = false;
+      if (showLoading) {
+        loading = false;
+      }
     });
   }
 
@@ -83,6 +87,7 @@ class _QsetPageState extends State<QsetPage> {
     return SafeArea(
       child: Scaffold(
         body: CustomScrollView(
+          controller: _scrollController,
           physics:
               BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
           slivers: [
@@ -107,7 +112,7 @@ class _QsetPageState extends State<QsetPage> {
     );
   }
 
-  Widget buildQuestionList(List<Question> questions) {
+  Widget buildQuestionList(List<QsetQuestion> questions) {
     return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       sliver: SliverList.builder(
@@ -126,10 +131,7 @@ class _QsetPageState extends State<QsetPage> {
             child: Material(
               type: MaterialType.transparency,
               child: ListTile(
-                onTap: () => context.push(
-                  '/qset/${qset!.id}/practice',
-                  extra: questions[index].id,
-                ),
+                onTap: () => openPracticePage(question),
                 trailing: (attempt == null)
                     ? Icon(Icons.arrow_forward_ios_rounded, size: 12)
                     : question.isCorrect(attempt.selectedOption)
@@ -143,7 +145,7 @@ class _QsetPageState extends State<QsetPage> {
                   maxLines: 3,
                 ),
               ),
-            ).animate(delay: (index * 100).ms).slideX().fade(),
+            ).animate().slideX().fade(),
           );
         },
       ),
@@ -201,5 +203,13 @@ class _QsetPageState extends State<QsetPage> {
         ),
       ],
     );
+  }
+
+  void openPracticePage(QsetQuestion question) async {
+    await context.push(
+      '/qset/${qset!.id}/practice',
+      extra: question.id,
+    );
+    fetchQset(false);
   }
 }

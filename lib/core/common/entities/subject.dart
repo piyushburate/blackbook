@@ -6,6 +6,9 @@ class Subject {
   final String name;
   final Exam exam;
   final List<Qset> qsets;
+  final int time;
+  final int marks;
+  final int negativeMarks;
 
   int get chaptersCount => qsets.length;
   int get questionsCount {
@@ -21,5 +24,8 @@ class Subject {
     required this.name,
     required this.exam,
     required this.qsets,
+    required this.time,
+    required this.marks,
+    required this.negativeMarks,
   });
 }

@@ -6,6 +6,7 @@ import 'package:blackbook/core/error/exceptions.dart';
 import 'package:blackbook/core/error/failures.dart';
 import 'package:blackbook/features/dashboard/domain/repositories/qset_repository.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' as sp;
 
 import '../datasources/qset_remote_data_source.dart';
 
@@ -19,6 +20,10 @@ class QsetRepositoryImpl implements QsetRepository {
     try {
       final qset = await qsetRemoteDataSource.getQsetFromId(id);
       return right(qset);
+    } on sp.PostgrestException catch (e) {
+      return left(Failure(e.message));
+    } on sp.AuthException catch (e) {
+      return left(Failure(e.message));
     } on ServerException catch (e) {
       return left(Failure(e.message));
     } catch (e) {
@@ -37,6 +42,10 @@ class QsetRepositoryImpl implements QsetRepository {
       final attemptedQuestion = await qsetRemoteDataSource
           .saveQsetAttemptedQuestion(authUser, question, option, time);
       return right(attemptedQuestion);
+    } on sp.PostgrestException catch (e) {
+      return left(Failure(e.message));
+    } on sp.AuthException catch (e) {
+      return left(Failure(e.message));
     } on ServerException catch (e) {
       return left(Failure(e.message));
     } catch (e) {
@@ -54,6 +63,10 @@ class QsetRepositoryImpl implements QsetRepository {
       final attemptedQuestionList =
           await qsetRemoteDataSource.getQsetAttemptedQuestions(authUser, qset);
       return right(attemptedQuestionList);
+    } on sp.PostgrestException catch (e) {
+      return left(Failure(e.message));
+    } on sp.AuthException catch (e) {
+      return left(Failure(e.message));
     } on ServerException catch (e) {
       return left(Failure(e.message));
     } catch (e) {

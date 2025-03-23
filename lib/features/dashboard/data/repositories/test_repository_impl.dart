@@ -1,22 +1,23 @@
-import 'package:blackbook/core/common/entities/exam.dart';
-import 'package:blackbook/core/common/entities/subject.dart';
+import 'package:blackbook/core/common/entities/attempted_question.dart';
+import 'package:blackbook/core/common/entities/test.dart';
+import 'package:blackbook/core/common/entities/test_attempt.dart';
 import 'package:blackbook/core/error/exceptions.dart';
 import 'package:blackbook/core/error/failures.dart';
-import 'package:blackbook/features/dashboard/data/datasources/exam_remote_data_source.dart';
-import 'package:blackbook/features/dashboard/domain/repositories/exam_repository.dart';
+import 'package:blackbook/features/dashboard/data/datasources/test_remote_data_source.dart';
+import 'package:blackbook/features/dashboard/domain/repositories/test_repository.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as sp;
 
-class ExamRepositoryImpl implements ExamRepository {
-  final ExamRemoteDataSource examRemoteDataSource;
+class TestRepositoryImpl implements TestRepository {
+  final TestRemoteDataSource testRemoteDataSource;
 
-  const ExamRepositoryImpl(this.examRemoteDataSource);
+  const TestRepositoryImpl(this.testRemoteDataSource);
 
   @override
-  Future<Either<Failure, List<Exam>>> listExams() async {
+  Future<Either<Failure, Test>> getTestFromId(String id) async {
     try {
-      final exams = await examRemoteDataSource.listExams();
-      return right(exams);
+      final test = await testRemoteDataSource.getTestFromId(id);
+      return right(test);
     } on sp.PostgrestException catch (e) {
       return left(Failure(e.message));
     } on sp.AuthException catch (e) {
@@ -29,10 +30,10 @@ class ExamRepositoryImpl implements ExamRepository {
   }
 
   @override
-  Future<Either<Failure, Exam>> selectUserExam(Exam exam) async {
+  Future<Either<Failure, List<TestAttempt>>> listAttempts(String examId) async {
     try {
-      final newExam = await examRemoteDataSource.selectUserExam(exam);
-      return right(newExam);
+      final attempts = await testRemoteDataSource.listAttempts(examId);
+      return right(attempts);
     } on sp.PostgrestException catch (e) {
       return left(Failure(e.message));
     } on sp.AuthException catch (e) {
@@ -45,10 +46,10 @@ class ExamRepositoryImpl implements ExamRepository {
   }
 
   @override
-  Future<Either<Failure, Exam>> getExamFromId(String id) async {
+  Future<Either<Failure, TestAttempt>> getAttemptFromId(String id) async {
     try {
-      final exam = await examRemoteDataSource.getExamFromId(id);
-      return right(exam);
+      final attempt = await testRemoteDataSource.getAttemptFromId(id);
+      return right(attempt);
     } on sp.PostgrestException catch (e) {
       return left(Failure(e.message));
     } on sp.AuthException catch (e) {
@@ -61,10 +62,18 @@ class ExamRepositoryImpl implements ExamRepository {
   }
 
   @override
-  Future<Either<Failure, Subject>> getSubjectFromId(String id) async {
+  Future<Either<Failure, TestAttempt>> addAttempt({
+    required Test test,
+    required int time,
+    required List<TestAttemptedQuestion> attemptedQuestions,
+  }) async {
     try {
-      final subject = await examRemoteDataSource.getSubjectFromId(id);
-      return right(subject);
+      final testAttempt = await testRemoteDataSource.addAttempt(
+        test: test,
+        time: time,
+        attemptedQuestions: attemptedQuestions,
+      );
+      return right(testAttempt);
     } on sp.PostgrestException catch (e) {
       return left(Failure(e.message));
     } on sp.AuthException catch (e) {

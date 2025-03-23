@@ -30,8 +30,8 @@ class _SubjectPageState extends State<SubjectPage> {
     });
   }
 
-  void fetchSubject() async {
-    if (!loading) {
+  void fetchSubject([bool showLoading = true]) async {
+    if (!loading && showLoading) {
       setState(() => loading = true);
     }
     final subject =
@@ -90,7 +90,7 @@ class _SubjectPageState extends State<SubjectPage> {
           return Material(
             type: MaterialType.transparency,
             child: ListTile(
-              onTap: () => context.push('/qset/${qsets[index].id}'),
+              onTap: () => openQsetPage(qsets[index]),
               title: Text(
                 qsets[index].title,
                 style: TextStyle(
@@ -107,7 +107,7 @@ class _SubjectPageState extends State<SubjectPage> {
               ),
               trailing: Icon(Icons.arrow_forward_ios_rounded, size: 12),
             ),
-          ).animate(delay: (index * 100).ms).slideX().fade();
+          ).animate().slideX().fade();
         },
       ),
     );
@@ -135,5 +135,10 @@ class _SubjectPageState extends State<SubjectPage> {
         )
       ],
     );
+  }
+
+  void openQsetPage(Qset qset) async {
+    await context.push('/qset/${qset.id}');
+    fetchSubject(false);
   }
 }

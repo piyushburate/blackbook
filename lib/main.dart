@@ -6,6 +6,7 @@ import 'package:blackbook/core/theme/app_theme.dart';
 import 'package:blackbook/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:blackbook/features/dashboard/presentation/cubits/dashboard/dashboard_cubit.dart';
 import 'package:blackbook/features/dashboard/presentation/cubits/exam/exam_cubit.dart';
+import 'package:blackbook/features/dashboard/presentation/cubits/test/test_cubit.dart';
 import 'package:blackbook/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -32,6 +33,9 @@ void main() async {
       ),
       BlocProvider(
         create: (context) => serviceLocator<ExamCubit>(),
+      ),
+      BlocProvider(
+        create: (context) => serviceLocator<TestCubit>(),
       ),
       BlocProvider(
         create: (context) => serviceLocator<DashboardCubit>(),

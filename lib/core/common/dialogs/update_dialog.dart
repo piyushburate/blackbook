@@ -11,9 +11,9 @@ class UpdateDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Dialog(
-      backgroundColor: Colors.red,
-      insetPadding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+      alignment: Alignment.center,
       child: Container(
         // margin: EdgeInsets.all(20),
         width: double.infinity,

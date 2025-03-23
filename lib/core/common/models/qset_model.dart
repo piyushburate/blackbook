@@ -7,9 +7,6 @@ class QsetModel extends Qset {
     required super.id,
     required super.title,
     required super.subject,
-    required super.time,
-    required super.marks,
-    required super.negativeMarks,
     required super.questions,
   });
 
@@ -17,9 +14,6 @@ class QsetModel extends Qset {
     return QsetModel(
       id: map['id'] ?? '',
       title: map['title'] ?? '',
-      time: ((map['time'] ?? 0) as num).toInt(),
-      marks: ((map['marks'] ?? 0) as num).toInt(),
-      negativeMarks: ((map['negative_marks'] ?? 0) as num).toInt(),
       subject: SubjectModel.fromJson(map['subject'] ?? {}),
       questions: (map['qset_questions'] != null)
           ? List.generate(

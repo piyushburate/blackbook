@@ -37,8 +37,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Session? get currentUserSession => supabaseClient.auth.currentSession;
 
-  final String userQuery =
-      "*, selected_exam:exams(id, name, subjects(id, name, qsets(id, qset_questions(id))), tests(*, exam:exams(id), test_questions(id)))";
+  final String userQuery = "*, selected_exam(id, name)";
 
   @override
   Future<UserModel> logInWithEmailPassword({

@@ -1,3 +1,4 @@
+import 'package:blackbook/core/common/cubits/theme/theme_cubit.dart';
 import 'package:blackbook/core/common/dialogs/update_dialog.dart';
 import 'package:blackbook/core/common/entities/auth_user.dart';
 import 'package:blackbook/core/constants/app_images.dart';
@@ -7,6 +8,7 @@ import 'package:blackbook/core/common/dialogs/logout_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:share_plus_dialog/share_plus_dialog.dart';
 
@@ -71,10 +73,12 @@ class ProfileSection extends StatelessWidget {
               buildSettingTile(
                 title: 'Check for Updates',
                 icon: Icons.update_sharp,
-                onTap: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) => UpdateDialog(),
+                onTap: () async {
+                  GetIt.instance<ThemeCubit>().handleSystemUiOverlayStyle(
+                    showDialog(
+                      context: context,
+                      builder: (context) => UpdateDialog(),
+                    ),
                   );
                 },
               ),
@@ -87,9 +91,11 @@ class ProfileSection extends StatelessWidget {
                     Theme.of(context).colorScheme.error.withAlpha(15),
                 foregroundColor: Theme.of(context).colorScheme.error,
                 onTap: () async {
-                  await showDialog(
-                    context: context,
-                    builder: (context) => LogoutDialog(),
+                  GetIt.instance<ThemeCubit>().handleSystemUiOverlayStyle(
+                    showDialog(
+                      context: context,
+                      builder: (context) => LogoutDialog(),
+                    ),
                   );
                 },
               )
@@ -176,12 +182,14 @@ class ProfileSection extends StatelessWidget {
   }
 
   void shareApp(BuildContext context) async {
-    ShareDialog.share(
-      context,
-      dialogTitle: 'Share Our App',
-      body:
-          'https://play.google.com/store/apps/details?id=com.example.blackbook',
-      platforms: SharePlatform.defaults,
+    GetIt.instance<ThemeCubit>().handleSystemUiOverlayStyle(
+      ShareDialog.share(
+        context,
+        dialogTitle: 'Share Our App',
+        body:
+            'https://play.google.com/store/apps/details?id=com.example.blackbook',
+        platforms: SharePlatform.defaults,
+      ),
     );
   }
 

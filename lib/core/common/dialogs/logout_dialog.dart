@@ -6,14 +6,9 @@ import 'package:go_router/go_router.dart';
 import '../cubits/app_user/app_user_cubit.dart';
 import '../widgets/app_button.dart';
 
-class LogoutDialog extends StatefulWidget {
+class LogoutDialog extends StatelessWidget {
   const LogoutDialog({super.key});
 
-  @override
-  State<LogoutDialog> createState() => _LogoutDialogState();
-}
-
-class _LogoutDialogState extends State<LogoutDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
