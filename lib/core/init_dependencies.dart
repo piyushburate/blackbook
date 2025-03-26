@@ -8,6 +8,7 @@ import 'package:blackbook/features/auth/domain/repositories/auth_repository.dart
 import 'package:blackbook/features/auth/domain/usecases/complete_registration.dart';
 import 'package:blackbook/features/auth/domain/usecases/current_user.dart';
 import 'package:blackbook/features/auth/domain/usecases/send_otp.dart';
+import 'package:blackbook/features/auth/domain/usecases/user_google_sign_in.dart';
 import 'package:blackbook/features/auth/domain/usecases/user_log_in.dart';
 import 'package:blackbook/features/auth/domain/usecases/user_sign_up.dart';
 import 'package:blackbook/features/auth/domain/usecases/verify_otp.dart';
@@ -50,6 +51,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get_it/get_it.dart';
+import 'package:google_sign_in_all_platforms/google_sign_in_all_platforms.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -62,6 +64,12 @@ Future<void> initDependencies() async {
     anonKey: dotenv.env['SUPABASE_ANON_KEY'] ?? '',
   );
   serviceLocator.registerLazySingleton(() => supabase.client);
+  serviceLocator.registerLazySingleton(() => GoogleSignIn(
+        params: GoogleSignInParams(
+          clientId: dotenv.env['GOOGLE_SIGN_IN_WEB_CLIENT_ID'],
+          clientSecret: dotenv.env['GOOGLE_SIGN_IN_WEB_CLIENT_SECRET'],
+        ),
+      ));
 
   // core
   await _initTheme();
@@ -91,7 +99,8 @@ void _initAuth() {
   serviceLocator
     // DataSources
     ..registerLazySingleton<AuthRemoteDataSource>(
-      () => AuthRemoteDataSourceImpl(serviceLocator()),
+      () => AuthRemoteDataSourceImpl(
+          supabaseClient: serviceLocator(), googleSignIn: serviceLocator()),
     )
     ..registerLazySingleton<ExamRemoteDataSource>(
       () => ExamRemoteDataSourceImpl(
@@ -136,6 +145,9 @@ void _initAuth() {
     )
     ..registerLazySingleton<UserLogIn>(
       () => UserLogIn(serviceLocator()),
+    )
+    ..registerLazySingleton<UserGoogleSignIn>(
+      () => UserGoogleSignIn(serviceLocator()),
     )
     ..registerLazySingleton<SendOtp>(
       () => SendOtp(serviceLocator()),
@@ -200,6 +212,7 @@ void _initAuth() {
         appUserCubit: serviceLocator(),
         userSignUp: serviceLocator(),
         userLogIn: serviceLocator(),
+        userGoogleSignIn: serviceLocator(),
         currentUser: serviceLocator(),
         sendOtp: serviceLocator(),
         verifyOtp: serviceLocator(),

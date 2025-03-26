@@ -46,10 +46,10 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
     required String currentPassword,
     required String newPassword,
   }) async {
-    if (supabaseClient.auth.currentSession == null) {
+    final currentSession = supabaseClient.auth.currentSession;
+    if (currentSession == null) {
       throw ServerException('Login First!');
     }
-
     try {
       final response1 = await supabaseClient.auth.signInWithPassword(
         email: supabaseClient.auth.currentSession!.user.email,
@@ -59,7 +59,7 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
         throw 'Incorrect Current Password!';
       }
     } catch (e) {
-      throw 'Incorrect Current Password';
+      throw 'Incorrect Current Password!';
     }
 
     final response2 = await supabaseClient.auth

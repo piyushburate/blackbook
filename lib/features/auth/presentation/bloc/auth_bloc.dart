@@ -5,6 +5,7 @@ import 'package:blackbook/core/common/entities/user.dart';
 import 'package:blackbook/features/auth/domain/usecases/complete_registration.dart';
 import 'package:blackbook/features/auth/domain/usecases/current_user.dart';
 import 'package:blackbook/features/auth/domain/usecases/send_otp.dart';
+import 'package:blackbook/features/auth/domain/usecases/user_google_sign_in.dart';
 import 'package:blackbook/features/auth/domain/usecases/user_log_in.dart';
 import 'package:blackbook/features/auth/domain/usecases/user_sign_up.dart';
 import 'package:blackbook/features/auth/domain/usecases/verify_otp.dart';
@@ -18,6 +19,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AppUserCubit _appUserCubit;
   final UserSignUp _userSignUp;
   final UserLogIn _userLogIn;
+  final UserGoogleSignIn _userGoogleSignIn;
   final CurrentUser _currentUser;
   final SendOtp _sendOtp;
   final VerifyOtp _verifyOtp;
@@ -27,6 +29,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required AppUserCubit appUserCubit,
     required UserSignUp userSignUp,
     required UserLogIn userLogIn,
+    required UserGoogleSignIn userGoogleSignIn,
     required CurrentUser currentUser,
     required SendOtp sendOtp,
     required VerifyOtp verifyOtp,
@@ -34,6 +37,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   })  : _appUserCubit = appUserCubit,
         _userSignUp = userSignUp,
         _userLogIn = userLogIn,
+        _userGoogleSignIn = userGoogleSignIn,
         _currentUser = currentUser,
         _sendOtp = sendOtp,
         _verifyOtp = verifyOtp,
@@ -41,6 +45,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         super(AuthInitial()) {
     on<AuthLogIn>(_onAuthLogIn);
     on<AuthSignUp>(_onAuthSignUp);
+    on<AuthGoogleSignIn>(_onAuthGoogleSignIn);
     on<AuthSendOtp>(_onAuthSendOtp);
     on<AuthVerifyOtp>(_onAuthVerifyOtp);
     on<AuthCompleteRegistration>(_onAuthCompleteRegistration);
@@ -65,6 +70,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       email: event.email,
       password: event.password,
     ));
+    response.fold(
+      (failure) => emit(AuthFailure(failure.message)),
+      (user) => _emitAuthSuccess(user, emit),
+    );
+  }
+
+  void _onAuthGoogleSignIn(
+      AuthGoogleSignIn event, Emitter<AuthState> emit) async {
+    emit(AuthLoading());
+    final response = await _userGoogleSignIn(NoParams());
     response.fold(
       (failure) => emit(AuthFailure(failure.message)),
       (user) => _emitAuthSuccess(user, emit),

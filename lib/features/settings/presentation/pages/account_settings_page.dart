@@ -33,27 +33,28 @@ class AccountSettingsPage extends StatelessWidget {
                     subtitle: state.authUser.email,
                     icon: Icons.email_outlined,
                   ),
-                  Divider(),
+                  // Divider(),
                   buildListTile(
                     title: 'Edit Personal Details',
                     icon: Icons.account_circle_outlined,
                     onTap: () => context.push(
                         '/settings/account_settings/edit_personal_details'),
                   ),
-                  buildListTile(
-                    title: 'Change Password',
-                    icon: Icons.lock_outlined,
-                    onTap: () => context
-                        .push('/settings/account_settings/change_password'),
-                  ),
-                  Divider(),
-                  buildListTile(
-                    title: 'Delete Account',
-                    icon: Icons.delete_outlined,
-                    backgroundColor:
-                        Theme.of(context).colorScheme.error.withAlpha(15),
-                    foregroundColor: Theme.of(context).colorScheme.error,
-                  ),
+                  if (state.authUser.authProvider == 'email')
+                    buildListTile(
+                      title: 'Change Password',
+                      icon: Icons.lock_outlined,
+                      onTap: () => context
+                          .push('/settings/account_settings/change_password'),
+                    ),
+                  // Divider(),
+                  // buildListTile(
+                  //   title: 'Delete Account',
+                  //   icon: Icons.delete_outlined,
+                  //   backgroundColor:
+                  //       Theme.of(context).colorScheme.error.withAlpha(15),
+                  //   foregroundColor: Theme.of(context).colorScheme.error,
+                  // ),
                 ],
               ),
             ),

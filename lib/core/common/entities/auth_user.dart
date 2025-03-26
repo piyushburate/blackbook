@@ -18,6 +18,7 @@ abstract class AuthUser extends User {
   AuthUser({
     required super.id,
     required super.email,
+    required super.authProvider,
     required super.emailVerified,
     required this.firstName,
     required this.lastName,

@@ -177,7 +177,8 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const Gap(25),
                 GoogleSigninButton(
-                  onPressed: () {},
+                  onPressed: () =>
+                      context.read<AuthBloc>().add(AuthGoogleSignIn()),
                   text: 'Continue with Google',
                 ),
                 const Gap(25),

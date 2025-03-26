@@ -23,6 +23,8 @@ final class AuthLogIn extends AuthEvent {
   });
 }
 
+final class AuthGoogleSignIn extends AuthEvent {}
+
 final class AuthSendOtp extends AuthEvent {
   final void Function(String message) onSuccess;
 

@@ -5,6 +5,7 @@ class UserModel extends User {
   const UserModel({
     required super.id,
     required super.email,
+    required super.authProvider,
     required super.emailVerified,
   });
 
@@ -12,6 +13,7 @@ class UserModel extends User {
     return UserModel(
       id: map['id'] ?? '',
       email: map['email'] ?? '',
+      authProvider: map['auth_provider'] ?? '',
       emailVerified: false,
     );
   }
@@ -32,11 +34,13 @@ class UserModel extends User {
   UserModel copyWith({
     String? id,
     String? email,
+    String? authProvider,
     bool? emailVerified,
   }) {
     return UserModel(
       id: id ?? this.id,
       email: email ?? this.email,
+      authProvider: authProvider ?? this.authProvider,
       emailVerified: emailVerified ?? this.emailVerified,
     );
   }

@@ -1,6 +1,7 @@
 import 'package:blackbook/core/error/exceptions.dart';
 import 'package:blackbook/core/common/models/auth_user_model.dart';
 import 'package:blackbook/core/common/models/user_model.dart';
+import 'package:google_sign_in_all_platforms/google_sign_in_all_platforms.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 abstract interface class AuthRemoteDataSource {
@@ -14,6 +15,8 @@ abstract interface class AuthRemoteDataSource {
     required String email,
     required String password,
   });
+  Future<UserModel> signInWithGoogle();
+
   Future<String> sendOtp(String email);
   Future<UserModel> verifyOtp({
     required String email,
@@ -31,8 +34,12 @@ abstract interface class AuthRemoteDataSource {
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   final SupabaseClient supabaseClient;
+  final GoogleSignIn googleSignIn;
 
-  const AuthRemoteDataSourceImpl(this.supabaseClient);
+  const AuthRemoteDataSourceImpl({
+    required this.supabaseClient,
+    required this.googleSignIn,
+  });
 
   @override
   Session? get currentUserSession => supabaseClient.auth.currentSession;
@@ -46,12 +53,15 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }) async {
     final data = await supabaseClient
         .from('users')
-        .select('email')
+        .select('email, auth_provider')
         .eq('email', email)
         .limit(1)
         .maybeSingle();
     if (data == null) {
       throw ServerException('Sign up first!');
+    }
+    if (data['auth_provider'] != 'email') {
+      throw 'Email is used with Google SignIn';
     }
     return _getSession(() async {
       final response = await supabaseClient.auth.signInWithPassword(
@@ -76,6 +86,26 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       final response = await supabaseClient.auth.signUp(
         email: email,
         password: password,
+      );
+      final user = response.user;
+      if (user == null) {
+        throw ServerException('Error creating user!');
+      }
+      return user;
+    });
+  }
+
+  @override
+  Future<UserModel> signInWithGoogle() async {
+    return _getSession(() async {
+      await googleSignIn.signOut();
+      final creds = await googleSignIn.signIn();
+      if (creds == null) throw 'Cancelled Google Sign In';
+      final idToken = creds.idToken;
+      if (idToken == null) throw 'Something went wrong!';
+      final response = await supabaseClient.auth.signInWithIdToken(
+        provider: OAuthProvider.google,
+        idToken: idToken,
       );
       final user = response.user;
       if (user == null) {
