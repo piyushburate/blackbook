@@ -31,7 +31,7 @@ class SettingsCubit extends Cubit<SettingsState> {
       gender: gender,
     ));
     response.fold(
-      (failure) => EasyLoading.showError(failure.message),
+      (failure) => EasyLoading.showError(failure.message, dismissOnTap: true),
       (isUpdated) => result = isUpdated,
     );
     return result;
@@ -47,7 +47,7 @@ class SettingsCubit extends Cubit<SettingsState> {
       newPassword: newPassword,
     ));
     response.fold(
-      (failure) => EasyLoading.showError(failure.message),
+      (failure) => EasyLoading.showError(failure.message, dismissOnTap: true),
       (isUpdated) => result = isUpdated,
     );
     return result;

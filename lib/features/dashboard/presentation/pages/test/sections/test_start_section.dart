@@ -123,7 +123,10 @@ class _TestStartSectionState extends State<TestStartSection> {
           color: Colors.transparent,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(100),
-            side: BorderSide(width: 1),
+            side: BorderSide(
+              width: 1,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
           ),
           child: SizedBox.square(
             dimension: 50,

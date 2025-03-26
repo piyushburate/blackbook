@@ -144,7 +144,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
       if (_newPasswordCtrl.text.trim() != _conPasswordCtrl.text.trim()) {
         return;
       }
-
+      EasyLoading.show();
       final isUpdated = await context.read<SettingsCubit>().changePassword(
             currentPassword: _currentPasswordCtrl.text.trim(),
             newPassword: _newPasswordCtrl.text.trim(),

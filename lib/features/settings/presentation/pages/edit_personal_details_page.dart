@@ -5,6 +5,7 @@ import 'package:blackbook/core/common/widgets/app_loader.dart';
 import 'package:blackbook/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:date_field/date_field.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get_it/get_it.dart';
 
@@ -36,8 +37,8 @@ class _EditPersonalDetailsPageState extends State<EditPersonalDetailsPage> {
     });
   }
 
-  void loadData() {
-    if (!loading) {
+  void loadData([bool showLoading = true]) {
+    if (!loading && showLoading) {
       setState(() => loading = true);
     }
     final appUserState = GetIt.instance<AppUserCubit>().state;
@@ -66,121 +67,126 @@ class _EditPersonalDetailsPageState extends State<EditPersonalDetailsPage> {
         subtitle: 'User Not Found!',
       );
     }
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('Edit Personal Details'),
-        ),
-        body: SingleChildScrollView(
-          padding: EdgeInsets.all(20),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              spacing: 18,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Row(
-                  spacing: 14,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: InputField(
-                        controller: _firstNameController,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Required';
-                          }
-                          return null;
-                        },
-                        textInputAction: TextInputAction.next,
-                        hintText: 'First Name',
-                        prefixIcon: const Icon(
-                          Icons.account_circle_outlined,
+    return BlocListener<AppUserCubit, AppUserState>(
+      listener: (context, state) {
+        loadData(false);
+      },
+      child: SafeArea(
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text('Edit Personal Details'),
+          ),
+          body: SingleChildScrollView(
+            padding: EdgeInsets.all(20),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                spacing: 18,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    spacing: 14,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: InputField(
+                          controller: _firstNameController,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Required';
+                            }
+                            return null;
+                          },
+                          textInputAction: TextInputAction.next,
+                          hintText: 'First Name',
+                          prefixIcon: const Icon(
+                            Icons.account_circle_outlined,
+                            size: 20,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: InputField(
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Required';
+                            }
+                            return null;
+                          },
+                          controller: _lastNameController,
+                          textInputAction: TextInputAction.next,
+                          hintText: 'Last Name',
+                        ),
+                      ),
+                    ],
+                  ),
+                  DateTimeFormField(
+                    decoration: const InputDecoration(
+                      hintText: 'Enter Your Birthdate',
+                      prefixIcon: Padding(
+                        padding: EdgeInsets.all(16),
+                        child: Icon(Icons.cake_outlined, size: 20),
+                      ),
+                    ),
+                    initialValue: birthdate,
+                    canClear: false,
+                    hideDefaultSuffixIcon: true,
+                    mode: DateTimeFieldPickerMode.date,
+                    validator: (value) {
+                      if (value == null) return 'Birthdate is required';
+                      return null;
+                    },
+                    firstDate: DateTime(1900),
+                    lastDate: DateTime.now(),
+                    initialPickerDateTime: DateTime(2008),
+                    onChanged: (DateTime? value) {
+                      birthdate = value;
+                      setState(() {});
+                    },
+                  ),
+                  DropdownButtonFormField(
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Gender is required';
+                      }
+                      return null;
+                    },
+                    value: gender,
+                    hint: Text('Select your gender'),
+                    decoration: InputDecoration(
+                      hintText: 'Select your gender',
+                      prefixIcon: Padding(
+                        padding: EdgeInsets.all(16),
+                        child: Icon(
+                          (gender != null)
+                              ? (gender == 'male')
+                                  ? Icons.male_rounded
+                                  : (gender == 'female')
+                                      ? Icons.female_outlined
+                                      : Icons.transgender_rounded
+                              : Icons.transgender_rounded,
                           size: 20,
                         ),
                       ),
                     ),
-                    Expanded(
-                      child: InputField(
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Required';
-                          }
-                          return null;
-                        },
-                        controller: _lastNameController,
-                        textInputAction: TextInputAction.next,
-                        hintText: 'Last Name',
-                      ),
-                    ),
-                  ],
-                ),
-                DateTimeFormField(
-                  decoration: const InputDecoration(
-                    hintText: 'Enter Your Birthdate',
-                    prefixIcon: Padding(
-                      padding: EdgeInsets.all(16),
-                      child: Icon(Icons.cake_outlined, size: 20),
-                    ),
+                    items: [
+                      DropdownMenuItem(value: 'male', child: Text('Male')),
+                      DropdownMenuItem(value: 'female', child: Text('Female')),
+                      DropdownMenuItem(value: 'other', child: Text('Other')),
+                    ],
+                    onChanged: (value) => setState(() => gender = value),
                   ),
-                  initialValue: birthdate,
-                  canClear: false,
-                  hideDefaultSuffixIcon: true,
-                  mode: DateTimeFieldPickerMode.date,
-                  validator: (value) {
-                    if (value == null) return 'Birthdate is required';
-                    return null;
-                  },
-                  firstDate: DateTime(1900),
-                  lastDate: DateTime.now(),
-                  initialPickerDateTime: DateTime(2008),
-                  onChanged: (DateTime? value) {
-                    birthdate = value;
-                    setState(() {});
-                  },
-                ),
-                DropdownButtonFormField(
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Gender is required';
-                    }
-                    return null;
-                  },
-                  value: gender,
-                  hint: Text('Select your gender'),
-                  decoration: InputDecoration(
-                    hintText: 'Select your gender',
-                    prefixIcon: Padding(
-                      padding: EdgeInsets.all(16),
-                      child: Icon(
-                        (gender != null)
-                            ? (gender == 'male')
-                                ? Icons.male_rounded
-                                : (gender == 'female')
-                                    ? Icons.female_outlined
-                                    : Icons.transgender_rounded
-                            : Icons.transgender_rounded,
-                        size: 20,
-                      ),
-                    ),
-                  ),
-                  items: [
-                    DropdownMenuItem(value: 'male', child: Text('Male')),
-                    DropdownMenuItem(value: 'female', child: Text('Female')),
-                    DropdownMenuItem(value: 'other', child: Text('Other')),
-                  ],
-                  onChanged: (value) => setState(() => gender = value),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-        ),
-        bottomNavigationBar: Padding(
-          padding: EdgeInsets.fromLTRB(24, 14, 24, 14),
-          child: AppButton(
-            text: 'Save Details',
-            trailing: Icon(Icons.check),
-            onPressed: submitForm,
+          bottomNavigationBar: Padding(
+            padding: EdgeInsets.fromLTRB(24, 14, 24, 14),
+            child: AppButton(
+              text: 'Save Details',
+              trailing: Icon(Icons.check),
+              onPressed: submitForm,
+            ),
           ),
         ),
       ),
@@ -212,6 +218,7 @@ class _EditPersonalDetailsPageState extends State<EditPersonalDetailsPage> {
         dismissOnTap: true,
       );
     } else {
+      EasyLoading.show();
       final isUpdated =
           await GetIt.instance<SettingsCubit>().updatePersonalDetails(
         firstName: firstName,
