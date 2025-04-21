@@ -1,3 +1,6 @@
-# blackbook
+# 📘 Blackbook
 
-A new Flutter project.
+Blackbook is a powerful exam preparation app designed to help students excel in competitive exams like JEE, CET, and NEET. It offers well-structured question banks, topic-wise tests, and detailed analytics to track performance and progress. With an intuitive interface and personalized study experience, Blackbook is an ideal companion for focused and effective exam preparation.
+
+# 📸 Screenshots
+<p float="left"> <img src="https://github.com/user-attachments/assets/3eb5c683-c9d9-4815-9eae-0861a1801b3b" width="200" /> <img src="https://github.com/user-attachments/assets/111aa89b-91c9-4a6f-b2fc-3ef50879dfb8" width="200" /> <img src="https://github.com/user-attachments/assets/d8f0e1d8-ae8a-4434-8540-f2b21a66648a" width="200" /> <img src="https://github.com/user-attachments/assets/7ea9ec33-e575-4988-a629-3613358947e1" width="200" /> <img src="https://github.com/user-attachments/assets/cb778bdf-afef-4f2f-952d-37e304e60d36" width="200" /> <img src="https://github.com/user-attachments/assets/28dfdfdd-bdc6-432f-806f-a050f763f727" width="200" /> <img src="https://github.com/user-attachments/assets/6f8f10ad-09e0-4026-93eb-02cdea2f6eef" width="200" /> <img src="https://github.com/user-attachments/assets/f230cf12-75a7-4206-9d6e-f8eb4a76005f" width="200" /> <img src="https://github.com/user-attachments/assets/37a7acfe-087e-46b4-a411-c5ba696d316d" width="200" /> </p>
